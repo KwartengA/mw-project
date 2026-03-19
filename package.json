@@ -1,0 +1,28 @@
+{
+	"name": "mw-backend",
+	"version": "1.0.0",
+	"private": true,
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "pnpm --filter auth dev",
+		"dev:auth": "pnpm --filter auth dev",
+    	"postinstall": "node scripts/sync-envs.mjs"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@biomejs/biome": "^2.3.10"
+	},
+	"workspaces": {
+		"packages": [
+			"auth",
+			"common"
+		]
+	},
+
+	"engines": {
+		"node": "22"
+	}
+}

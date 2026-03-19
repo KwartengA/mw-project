@@ -1,0 +1,8 @@
+packages:
+  - auth
+  - common
+
+ignoredBuiltDependencies:
+  - '@prisma/engines'
+  - esbuild
+  - prisma

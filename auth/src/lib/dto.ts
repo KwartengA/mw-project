@@ -1,0 +1,24 @@
+import { z } from "zod";
+
+export const RegisterSchema = z.object({
+	name: z.string().min(1, "Name is required"),
+	email: z.email("Invalid email address"),
+	password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+export const LoginSchema = z.object({
+	email: z.email("Invalid email address"),
+	password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+export const UpdateProfileSchema = z
+	.object({
+		name: z.string().min(1, "Name is required").optional(),
+		email: z.email("Invalid email address").optional(),
+	})
+	.refine((data) => data.name !== undefined || data.email !== undefined, {
+		message: "At least one field must be provided",
+	});
+
+export type RegisterInput = z.infer<typeof RegisterSchema>;
+export type LoginInput = z.infer<typeof RegisterSchema>;

@@ -1,0 +1,36 @@
+{
+	"name": "@mw/common",
+	"private": true,
+	"version": "1.0.0",
+	"main": "dist/index.cjs",
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "vite build",
+		"clean": "rm -rf dist"
+	},
+	"dependencies": {},
+	"peerDependencies": {
+		"radashi": "^12.6.0",
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.5.2",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"@vitejs/plugin-react": "^4.4.1",
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3",
+		"vite": "^6.3.4",
+		"vite-plugin-dts": "^4.5.3",
+		"vite-tsconfig-paths": "^4.2.1"
+	},
+	"engines": {
+		"node": "22"
+	},
+	"packageManager": "pnpm@10.16.1"
+}
