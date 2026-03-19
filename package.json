@@ -7,7 +7,8 @@
 	"scripts": {
 		"dev": "pnpm --filter auth dev",
 		"dev:auth": "pnpm --filter auth dev",
-    	"postinstall": "node scripts/sync-envs.mjs"
+		"dev:gateway": "pnpm --filter gateway dev",
+		"postinstall": "node scripts/sync-envs.mjs"
 	},
 	"keywords": [],
 	"author": "",
@@ -18,7 +19,8 @@
 	"workspaces": {
 		"packages": [
 			"auth",
-			"common"
+			"common",
+			"gateway"
 		]
 	},
 

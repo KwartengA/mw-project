@@ -9,7 +9,6 @@
 		"postinstall": "npx prisma generate"
 	},
 	"dependencies": {
-		"@date-fns/tz": "^1.4.1",
 		"@hono/node-server": "^1.19.11",
 		"@prisma/adapter-pg": "^7.5.0",
 		"@prisma/client": "^7.5.0",
