@@ -1,22 +1,20 @@
 {
-	"name": "auth",
+	"name": "incident",
 	"type": "module",
-	"main": "dist/index.js",
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
 		"build": "rm -rf dist && prisma generate && tsc",
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
-		"@mw/common": "workspace:*",
 		"@hono/node-server": "^1.19.11",
 		"@prisma/adapter-pg": "^7.5.0",
 		"@prisma/client": "^7.5.0",
-		"argon2": "^0.44.0",
-		"date-fns": "^4.1.0",
 		"dotenv": "^17.3.1",
 		"hono": "^4.12.8",
+		"ioredis": "^5.10.1",
 		"pg": "^8.20.0",
+		"prisma-json-types-generator": "^4.1.1",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
@@ -25,9 +23,5 @@
 		"prisma": "^7.5.0",
 		"tsx": "^4.7.1",
 		"typescript": "^5.8.3"
-	},
-	"engines": {
-		"node": "22"
-	},
-	"packageManager": "pnpm@10.16.1"
+	}
 }

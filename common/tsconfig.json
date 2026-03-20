@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"ignoreDeprecations": "6.0",
+		"paths": {
+			"*": ["*"]
+		},
+		"moduleResolution": "bundler",
+		"declaration": true,
+		"declarationDir": "dist",
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"target": "ESNext",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"types": ["node"]
+	},
+	"include": ["src"],
+	"exclude": ["stories", "dist", "node_modules"]
+}

@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import { sign } from "hono/jwt";
-import z from "zod";
+import { treeifyError } from "zod";
 import { LoginSchema } from "./dto";
 import { match } from "./hash";
 import { prisma } from "./prisma.server";
@@ -10,7 +10,7 @@ export async function login(c: Context) {
 
 	const parsed = LoginSchema.safeParse(body);
 	if (!parsed.success) {
-		return c.json({ errors: z.treeifyError(parsed.error) }, 400);
+		return c.json({ errors: treeifyError(parsed.error) }, 400);
 	}
 
 	const { email, password } = parsed.data;

@@ -8,7 +8,9 @@
 		"dev": "pnpm --filter auth dev",
 		"dev:auth": "pnpm --filter auth dev",
 		"dev:gateway": "pnpm --filter gateway dev",
-		"postinstall": "node scripts/sync-envs.mjs"
+		"dev:incident": "pnpm --filter incident dev",
+
+		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter incident build"
 	},
 	"keywords": [],
 	"author": "",
@@ -20,10 +22,10 @@
 		"packages": [
 			"auth",
 			"common",
-			"gateway"
+			"gateway",
+      "incident"
 		]
 	},
-
 	"engines": {
 		"node": "22"
 	}

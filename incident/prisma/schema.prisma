@@ -1,0 +1,105 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [postgis]
+}
+
+model Incident {
+  id           String    @id @default(uuid())
+  /// [IncidentType]
+  type         Json
+  description  String?
+  /// [IncidentLocation]
+  location     Json
+  /// [IncidentPriority]
+  priority     Json
+  /// [IncidentMetadata]
+  metadata     Json?
+  status       Status    @default(created)
+  reporterId   String?
+  operatorId   String?
+  version      Int       @default(1)
+  dispatchedAt DateTime?
+  resolvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status])
+}
+
+model Outbox {
+  id            Int          @id @default(autoincrement())
+  aggregateType String
+  aggregateId   String
+  topic         String
+  eventType     String
+  payload       Json
+  status        OutboxStatus @default(pending)
+  attempts      Int          @default(0)
+  nextAttempt   DateTime?
+  createdAt     DateTime     @default(now())
+  publishedAt   DateTime?
+
+  @@index([status, createdAt])
+}
+
+model Responder {
+  id        Int             @id @default(autoincrement())
+  name      String
+  type      ResponderType
+  status    ResponderStatus @default(available)
+  /// [ResponderLocation]
+  location  Json?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([status])
+}
+
+model Hospital {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  /// [HospitalLocation]
+  location            Json
+  totalBeds           Int      @default(0)
+  availableBeds       Int      @default(0)
+  totalAmbulances     Int      @default(0)
+  availableAmbulances Int      @default(0)
+  updatedAt           DateTime @updatedAt
+}
+
+enum Status {
+  created
+  dispatched
+  in_progress
+  resolved
+  cancelled
+}
+
+enum OutboxStatus {
+  pending
+  published
+  failed
+}
+
+enum ResponderType {
+  ambulance
+  fire
+  police
+  ems
+}
+
+enum ResponderStatus {
+  available
+  dispatched
+  off_duty
+}

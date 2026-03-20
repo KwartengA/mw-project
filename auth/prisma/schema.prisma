@@ -12,6 +12,7 @@ model User {
   name           String
   email          String          @unique
   role           Role
+  affiliation    Affiliation     @default(system)
   isActive       Boolean         @default(true)
   lastLogin      DateTime?
   createdAt      DateTime        @default(now())
@@ -28,4 +29,11 @@ model AuthCredential {
 
 enum Role {
   admin
+}
+
+enum Affiliation {
+  police
+  fire
+  hospital
+  system
 }

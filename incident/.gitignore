@@ -27,6 +27,5 @@ lerna-debug.log*
 # misc
 .DS_Store
 
-/src/generated/prisma
-jwtRS256.key
 dist
+/src/generated/prisma

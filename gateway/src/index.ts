@@ -7,15 +7,13 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { authenticate } from "./lib/authenticate.js";
 import { SERVICE_ROUTES } from "./lib/ingress.js";
-import { proxy } from "./lib/proxy.js";
+import { log } from "./lib/logger.js";
 
 const app = new Hono();
 
 app.use("*", logger());
 
-app.all("/auth/*", (c) =>
-	proxy(c, process.env.AUTH_SERVICE_URL ?? "http://localhost:3000"),
-);
+app.all("/auth/*", (c) => log(c, process.env.AUTH_SERVICE_URL!));
 
 app.use("/api/*", authenticate);
 
@@ -27,7 +25,7 @@ app.all("/api/*", async (c) => {
 		return c.json({ detail: "Cannot resolve API route" }, 502);
 	}
 
-	return proxy(c, route.baseUrl, route.stripPrefix ? route.prefix : undefined);
+	return log(c, route.baseUrl, route.stripPrefix ? route.prefix : undefined);
 });
 
 serve(
