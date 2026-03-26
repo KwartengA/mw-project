@@ -10,7 +10,8 @@
 		"dev:gateway": "pnpm --filter gateway dev",
 		"dev:incident": "pnpm --filter incident dev",
 		"dev:dispatch": "pnpm --filter dispatch dev",
-		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter incident build && pnpm --filter dispatch build"
+		"dev:client": "pnpm --filter client dev",
+		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter incident build && pnpm --filter dispatch build && pnpm --filter client build"
 	},
 	"keywords": [],
 	"author": "",
@@ -24,7 +25,8 @@
 			"common",
 			"gateway",
 			"incident",
-			"dispatch"
+			"dispatch",
+			"client"
 		]
 	},
 	"engines": {

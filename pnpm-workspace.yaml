@@ -4,6 +4,7 @@ packages:
   - gateway
   - incident
   - dispatch
+  - client
 
 ignoredBuiltDependencies:
   - '@prisma/engines'
