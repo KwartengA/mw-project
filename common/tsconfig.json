@@ -16,7 +16,8 @@
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"strict": true,
-		"types": ["node"]
+		"types": ["node"],
+		"rootDir": "/"
 	},
 	"include": ["src"],
 	"exclude": ["stories", "dist", "node_modules"]
