@@ -14,6 +14,7 @@
 		"migrate": "prisma migrate deploy"
 	},
 	"dependencies": {
+		"@mw/common": "workspace:*",
 		"@iconify-json/lucide": "^1.2.74",
 		"@iconify-json/solar": "^1.2.5",
 		"@iconify-json/svg-spinners": "^1.2.4",

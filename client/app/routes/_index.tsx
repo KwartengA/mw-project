@@ -9,12 +9,11 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-	return ( 
+	return (
 		<div className="h-screen flex flex-col">
 			<div className="h-full h-0 flex-1 relative">
-							<GeospyMap initialLatLng={{ lat: 5.614818, lng: -0.205874 }} />
+				<GeospyMap initialLatLng={{ lat: 5.614818, lng: -0.205874 }} />
 			</div>
-
 		</div>
 	);
 }
