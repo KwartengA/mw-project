@@ -17,11 +17,23 @@ datasource db {
   provider = "postgresql"
 }
 
+model Hospital {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  /// [ResourceLocation]
+  location            Json
+  totalBeds           Int      @default(0)
+  availableBeds       Int      @default(0)
+  totalAmbulances     Int      @default(0)
+  availableAmbulances Int      @default(0)
+  updatedAt           DateTime @updatedAt
+}
+
 model Station {
   id        Int         @id @default(autoincrement())
   name      String
   type      StationType
-  /// [StationLocation]
+  /// [ResourceLocation]
   location  Json
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt

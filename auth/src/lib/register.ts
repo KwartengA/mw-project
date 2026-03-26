@@ -19,7 +19,7 @@ export async function register(c: Context) {
 	});
 
 	if (exists) {
-		return c.json({ detail: "User already exists" }, 409);
+		return c.json({ detail: "user already exists" }, 409);
 	}
 
 	const hashed = await hash(password);

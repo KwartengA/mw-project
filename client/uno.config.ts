@@ -11,6 +11,7 @@ export default defineConfig({
 	content: {
 		filesystem: ["app/*.{html,js,ts,jsx,tsx,vue,svelte,astro}"],
 	},
-	presets: [presetWind3({ dark: "media" }), presetIcons(), presetForms()],
+	presets: [presetWind3({ dark: "class" }), presetIcons(), presetForms()],
 	transformers: [transformerDirectives(), transformerVariantGroup()],
+	safelist: ["text-xs", "text-gray-500"],
 });

@@ -48,10 +48,3 @@ export const NearbySchema = z.object({
 	lng: z.coerce.number().min(-180).max(180),
 	radius: z.coerce.number().min(0).max(500).default(10),
 });
-
-export const UpdateCapacitySchema = z.object({
-	availableBeds: z.number().int().min(0).optional(),
-	totalBeds: z.number().int().min(0).optional(),
-	availableAmbulances: z.number().int().min(0).optional(),
-	totalAmbulances: z.number().int().min(0).optional(),
-});

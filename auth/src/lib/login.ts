@@ -36,7 +36,6 @@ export async function login(c: Context) {
 
 	// strip credentials from response
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { authCredential, ...safeUser } = user;
 
 	const now = Math.floor(Date.now() / 1000);
 
@@ -45,6 +44,7 @@ export async function login(c: Context) {
 			sub: String(user.id),
 			email: user.email,
 			role: user.role,
+			name: user.name,
 			iat: now,
 			exp: now + 14 * 24 * 60 * 60, // 14 days
 		},
@@ -52,5 +52,5 @@ export async function login(c: Context) {
 		"RS256",
 	);
 
-	return c.json({ user: safeUser, token }, 200);
+	return c.json({ token }, 200);
 }

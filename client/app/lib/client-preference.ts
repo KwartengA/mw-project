@@ -1,7 +1,7 @@
-type SomeValue = { name: string };
+type AppTheme = "light" | "dark" | "system";
 
 type Pref = {
-	"@gremix/some-key": SomeValue;
+	"@mw/theme": AppTheme;
 };
 
 type PrefKey = keyof Pref;

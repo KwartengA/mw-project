@@ -9,6 +9,11 @@ import { authenticate } from "./lib/authenticate.js";
 import { SERVICE_ROUTES } from "./lib/ingress.js";
 import { log } from "./lib/log.js";
 
+// @ts-ignore
+BigInt.prototype.toJSON = function () {
+	return Number(this);
+};
+
 const app = new Hono();
 
 app.use("*", logger());

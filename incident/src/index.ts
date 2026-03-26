@@ -1,7 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { updateCapacity } from "./lib/hospital";
 import {
 	assign,
 	create,
@@ -12,6 +11,11 @@ import {
 } from "./lib/incident";
 import { startPublisher } from "./lib/publisher";
 import { listResponders, nearby } from "./lib/responders";
+
+// @ts-ignore
+BigInt.prototype.toJSON = function () {
+	return Number(this);
+};
 
 const app = new Hono();
 
@@ -41,8 +45,6 @@ incident.put("/:id/status", updateStatus);
 incident.put("/:id/assign", assign);
 
 app.get("/responders", listResponders);
-
-app.put("/hospital/:id/capacity", updateCapacity);
 
 serve(
 	{

@@ -1,6 +1,6 @@
 declare global {
 	namespace PrismaJson {
-		type StationLocation = {
+		type ResourceLocation = {
 			address: string;
 			lat: number;
 			lng: number;

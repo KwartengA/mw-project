@@ -3,12 +3,19 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { getActiveDispatches, markDispatchArrived } from "./lib/dispatch";
 import { registerDriver } from "./lib/driver";
+import { updateCapacity } from "./lib/hospital";
 import { tracking } from "./lib/tracking";
 import {
 	getVehicle,
 	getVehicleLocation,
+	registerVehicle,
 	updateVehicleLocation,
 } from "./lib/vehicle";
+
+// @ts-ignore
+BigInt.prototype.toJSON = function () {
+	return Number(this);
+};
 
 const app = new Hono();
 
@@ -26,11 +33,13 @@ dispatch.get("/vehicles/:id/location ", getVehicleLocation);
 
 dispatch.post("/vehicles/:id/location ", updateVehicleLocation);
 
-dispatch.post("/drivers/register ", registerDriver);
+dispatch.post("/vehicle/register ", registerVehicle);
 
 dispatch.post("/drivers/register ", registerDriver);
 
 dispatch.post("/dispatches/:id/arrive", markDispatchArrived);
+
+app.put("/hospital/:id/capacity", updateCapacity);
 
 serve(
 	{
