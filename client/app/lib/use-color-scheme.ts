@@ -1,26 +1,54 @@
-import React from "react";
+import { useAtom } from "jotai";
+import React, { useState } from "react";
+import { colorScheme, colorSchemePreference } from "~/lib/store";
+import { pref } from "./client-preference";
 
 function useColorScheme() {
-	const [colorScheme, setColorScheme] = React.useState<"light" | "dark">(
-		"light",
-	);
+	const [scheme, setScheme] = useAtom(colorScheme);
+	const [preference, setPreference] = useAtom(colorSchemePreference);
+
+	const [loaded, setLoaded] = useState(false);
 
 	React.useEffect(() => {
-		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-		setColorScheme(mediaQuery.matches ? "dark" : "light");
+		const preference = pref.get("@mw/theme");
+		if (preference) setPreference(preference);
+		setLoaded(true);
+	}, [setPreference]);
 
-		const handleChange = () => {
-			setColorScheme(mediaQuery.matches ? "dark" : "light");
-		};
+	React.useEffect(() => {
+		if (!loaded) return;
 
-		mediaQuery.addEventListener("change", handleChange);
+		if (preference === "system") {
+			const handleChange = (e: MediaQueryListEvent) => {
+				setScheme(e.matches ? "dark" : "light");
+			};
 
-		return () => {
-			mediaQuery.removeEventListener("change", handleChange);
-		};
-	}, []);
+			const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+			mediaQuery.addEventListener("change", handleChange);
 
-	return colorScheme;
+			setScheme(mediaQuery.matches ? "dark" : "light");
+			pref.set("@mw/theme", "system");
+
+			return () => mediaQuery.removeEventListener("change", handleChange);
+		}
+
+		setScheme(preference);
+		pref.set("@mw/theme", preference);
+	}, [preference, loaded, setScheme]);
+
+	React.useEffect(() => {
+		if (scheme === "light") {
+			document.documentElement.classList.remove("dark");
+			document.documentElement.classList.add("light");
+		}
+
+		if (scheme === "dark") {
+			document.documentElement.classList.remove("light");
+			document.documentElement.classList.add("dark");
+		}
+	}, [scheme]);
+
+	return { scheme, setPreference, preference };
 }
 
 export { useColorScheme };

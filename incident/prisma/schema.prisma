@@ -65,18 +65,6 @@ model Responder {
   @@index([status])
 }
 
-model Hospital {
-  id                  Int      @id @default(autoincrement())
-  name                String
-  /// [HospitalLocation]
-  location            Json
-  totalBeds           Int      @default(0)
-  availableBeds       Int      @default(0)
-  totalAmbulances     Int      @default(0)
-  availableAmbulances Int      @default(0)
-  updatedAt           DateTime @updatedAt
-}
-
 enum Status {
   created
   dispatched

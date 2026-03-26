@@ -23,12 +23,6 @@ declare global {
 			lat: number;
 			lng: number;
 		};
-
-		type HospitalLocation = {
-			address: string;
-			lat: number;
-			lng: number;
-		};
 	}
 }
 

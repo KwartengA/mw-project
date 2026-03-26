@@ -32,7 +32,7 @@ function ClientOnly({ children }: { children: React.ReactNode }) {
 
 function M({ initialLatLng }: Props) {
 	const [, setMap] = useAtom(map);
-	const scheme = useColorScheme();
+	const { scheme } = useColorScheme();
 
 	const mapRef = React.useRef<MapRef>(null);
 	const [isLoaded, setIsLoaded] = React.useState(false);
