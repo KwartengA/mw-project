@@ -3,6 +3,7 @@ packages:
   - common
   - gateway
   - incident
+  - dispatch
 
 ignoredBuiltDependencies:
   - '@prisma/engines'

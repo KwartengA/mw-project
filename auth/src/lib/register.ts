@@ -12,7 +12,7 @@ export async function register(c: Context) {
 		return c.json({ errors: z.treeifyError(parsed.error) }, 400);
 	}
 
-	const { name, email, password } = parsed.data;
+	const { name, email, password, affiliation, role } = parsed.data;
 
 	const exists = await prisma.user.findUnique({
 		where: { email },
@@ -25,7 +25,7 @@ export async function register(c: Context) {
 	const hashed = await hash(password);
 
 	const user = await prisma.user.create({
-		data: { name, email, role: "admin" },
+		data: { name, email, role, affiliation },
 	});
 
 	await prisma.authCredential.create({

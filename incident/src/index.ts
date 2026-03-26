@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { updateCapacity } from "./hospital";
+import { updateCapacity } from "./lib/hospital";
 import {
 	assign,
 	create,
@@ -47,7 +47,7 @@ app.put("/hospital/:id/capacity", updateCapacity);
 serve(
 	{
 		fetch: incident.fetch,
-		port: 4001,
+		port: Number(process.env.PORT) || 4001,
 	},
 	(info) => {
 		console.log(`Server is running on http://localhost:${info.port}`);

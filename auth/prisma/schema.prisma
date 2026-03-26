@@ -29,6 +29,7 @@ model AuthCredential {
 
 enum Role {
   admin
+  super
 }
 
 enum Affiliation {

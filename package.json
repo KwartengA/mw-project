@@ -5,12 +5,12 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "pnpm --filter auth dev",
+		"dev": "pnpm --filter gateway dev",
 		"dev:auth": "pnpm --filter auth dev",
 		"dev:gateway": "pnpm --filter gateway dev",
 		"dev:incident": "pnpm --filter incident dev",
-
-		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter incident build"
+		"dev:dispatch": "pnpm --filter dispatch dev",
+		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter incident build && pnpm --filter dispatch build"
 	},
 	"keywords": [],
 	"author": "",
@@ -23,10 +23,12 @@
 			"auth",
 			"common",
 			"gateway",
-      "incident"
+			"incident",
+			"dispatch"
 		]
 	},
 	"engines": {
 		"node": "22"
-	}
+	},
+	"packageManager": "pnpm@10.16.1"
 }

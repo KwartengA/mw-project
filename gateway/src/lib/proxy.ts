@@ -22,7 +22,6 @@ async function proxy(c: Context, base: string, stripPrefix?: string) {
 
 	if (user?.sub) headers.set("x-user-id", String(user.sub));
 	if (user?.role) headers.set("x-user-role", String(user.role));
-	if (user?.email) headers.set("x-user-email", String(user.email));
 
 	const method = c.req.method.toUpperCase();
 	const init: RequestInit = { method, headers };

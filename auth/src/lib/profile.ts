@@ -38,6 +38,10 @@ async function updateProfile(c: Context) {
 		return c.json({ errors: z.treeifyError(parsed.error) }, 400);
 	}
 
+	if (parsed.data.affiliation !== undefined && claims.role !== "super") {
+		return c.json({ detail: "forbidden" }, 403);
+	}
+
 	const userId = Number(claims.sub);
 	const data = parsed.data;
 

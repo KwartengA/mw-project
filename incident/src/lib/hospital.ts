@@ -1,7 +1,7 @@
 import type { Context } from "hono";
-import { UpdateCapacitySchema } from "./lib/dto";
-import { parse } from "./lib/http";
-import { prisma } from "./lib/prisma.server";
+import { UpdateCapacitySchema } from "./dto";
+import { parse } from "./http";
+import { prisma } from "./prisma.server";
 
 async function updateCapacity(c: Context) {
 	const id = c.req.param("id");
