@@ -32,6 +32,11 @@ async function updateProfile(c: Context) {
 	}
 
 	const body = await c.req.json();
+
+	if (body?.email !== undefined) {
+		return c.json({ detail: "email cannot be updated" }, 400);
+	}
+
 	const parsed = UpdateProfileSchema.safeParse(body);
 
 	if (!parsed.success) {
