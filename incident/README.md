@@ -19,12 +19,12 @@ created → dispatched → in_progress → resolved
                     ↘ cancelled
 ```
 
-Status transitions are explicit — each update is made via a dedicated endpoint. The service automatically records timestamps for key transitions:
+Status transitions are made through a single endpoint (`PUT /api/incident/:id/status`) that accepts any valid status value. The service automatically records timestamps for key transitions:
 
 - `dispatchedAt` — set when status moves to `dispatched`
-- `resolvedAt` — set when status moves to `resolved`
+- `resolvedAt` — set or updated whenever status is set to `resolved`
 
-Every update increments a `version` field, which supports optimistic concurrency control.
+Every update increments a `version` field, providing a monotonic counter that reflects how many times the incident has been mutated.
 
 ---
 
@@ -45,7 +45,7 @@ Every update increments a `version` field, which supports optimistic concurrency
 
 ### Outbox
 
-Used to guarantee event delivery without dual-write risk. Events are written to this table in the same database transaction as the domain change. A separate background process publishes them to Redis and marks them as published.
+Stores outgoing events for asynchronous delivery. After a domain write (create, status update, assign) completes, an outbox record is inserted in a separate operation. A background process then picks up pending records, publishes them to Redis, and marks them as published.
 
 ---
 

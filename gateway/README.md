@@ -54,7 +54,7 @@ Every request is tracked with a request ID (taken from the incoming `x-request-i
 | Variable | Required | Description |
 |---|---|---|
 | `JWT_PUBLIC_KEY` | Yes | RSA public key for verifying tokens issued by the auth service |
-| `AUTH_SERVICE_URL` | No | Defaults to `http://localhost:3000` |
+| `AUTH_SERVICE_URL` | Yes | URL of the auth service |
 | `INCIDENTS_SERVICE_URL` | No | Defaults to `http://localhost:4001` |
 | `DISPATCH_SERVICE_URL` | No | Defaults to `http://localhost:4002` |
 | `ANALYTICS_SERVICE_URL` | No | Defaults to `http://localhost:4003` |
