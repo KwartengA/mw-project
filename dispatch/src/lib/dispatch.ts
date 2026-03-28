@@ -57,7 +57,12 @@ export async function markDispatchArrived(c: Context) {
 				arrivedAt: now,
 			},
 			include: {
-				vehicle: true,
+				vehicle: {
+					include: {
+						driver: true,
+						station: true,
+					},
+				},
 			},
 		});
 
@@ -74,6 +79,10 @@ export async function markDispatchArrived(c: Context) {
 				dispatchId: dispatch.id,
 				incidentId: dispatch.incidentId,
 				vehicleId: dispatch.vehicleId,
+				emergencyService: dispatch.vehicle.station.type,
+				responderId: dispatch.vehicle.driver?.id ?? null,
+				responderName: dispatch.vehicle.driver?.name ?? null,
+				region: dispatch.vehicle.station.name,
 				arrivedAt: dispatch.arrivedAt,
 			},
 		});

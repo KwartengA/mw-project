@@ -1,10 +1,11 @@
 packages:
+  - analytics
   - auth
+  - client
   - common
+  - dispatch
   - gateway
   - incident
-  - dispatch
-  - client
 
 ignoredBuiltDependencies:
   - '@prisma/engines'

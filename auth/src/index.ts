@@ -12,11 +12,11 @@ import { getProfile, updateProfile } from "./lib/profile";
 import { register } from "./lib/register";
 import { openApiDoc } from "./lib/swagger";
 
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-	return Number(this);
-};
-
+declare global {
+	interface BigInt {
+		toJSON(): number;
+	}
+}
 const app = new Hono();
 
 const auth = app.basePath("/api/auth");

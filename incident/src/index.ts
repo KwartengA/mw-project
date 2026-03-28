@@ -14,10 +14,11 @@ import { startPublisher } from "./lib/publisher";
 import { nearby } from "./lib/responders";
 import { openApiDoc } from "./lib/swagger";
 
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-	return Number(this);
-};
+declare global {
+	interface BigInt {
+		toJSON(): number;
+	}
+}
 
 const app = new Hono();
 

@@ -10,10 +10,11 @@ import { SERVICE_ROUTES } from "./lib/ingress.js";
 import { log } from "./lib/log.js";
 import { resolveRoute } from "./lib/resolve-route.js";
 
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-	return Number(this);
-};
+declare global {
+	interface BigInt {
+		toJSON(): number;
+	}
+}
 
 const app = new Hono();
 

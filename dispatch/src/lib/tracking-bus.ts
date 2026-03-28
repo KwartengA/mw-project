@@ -16,6 +16,9 @@ async function ensureSubscribed() {
 	await subscriber.subscribe(CHANNEL);
 	subscriber.on("message", (channel, message) => {
 		if (channel !== CHANNEL) return;
+		console.log(
+			`[stream:consume] service=dispatch channel=${CHANNEL} subscribers=${clients.size} message=${message}`,
+		);
 		for (const client of clients) {
 			try {
 				client.send(message);
@@ -41,7 +44,11 @@ export function detachTrackingClient(client: Client) {
 }
 
 export async function publishTrackingUpdate(payload: object) {
-	await publisher.publish(CHANNEL, JSON.stringify(payload));
+	const message = JSON.stringify(payload);
+	console.log(
+		`[stream:publish] service=dispatch channel=${CHANNEL} message=${message}`,
+	);
+	await publisher.publish(CHANNEL, message);
 }
 
 export async function closeTrackingBus() {

@@ -7,12 +7,12 @@ import { haversineDistanceKm, toMap } from "./utils";
 
 type IncidentEventPayload = {
 	incident?: {
-		id?: string;
+		id?: string | number;
 		location?: {
 			center?: [number, number] | number[];
 		};
 	};
-	id?: string;
+	id?: string | number;
 	location?: {
 		center?: [number, number] | number[];
 	};
@@ -24,9 +24,15 @@ const CONSUMER = `dispatch-${process.pid}`;
 type StreamEntry = [entryId: string, fieldValues: string[]];
 type StreamBatch = [streamName: string, entries: StreamEntry[]];
 
+function toStringId(value: unknown): string | null {
+	if (typeof value === "string" && value.length > 0) return value;
+	if (typeof value === "number" && Number.isFinite(value)) return String(value);
+	return null;
+}
+
 function extractIncident(payload: IncidentEventPayload) {
 	const incident = payload.incident ?? payload;
-	const id = incident.id;
+	const id = toStringId(incident.id);
 	if (!id) return null;
 
 	const center = incident.location?.center;
@@ -67,6 +73,8 @@ async function processIncidentCreated(rawPayload: string) {
 	const candidates = await prisma.vehicle.findMany({
 		where: { status: VehicleStatus.available },
 		include: {
+			driver: true,
+			station: true,
 			locations: {
 				orderBy: { recordedAt: "desc" },
 				take: 1,
@@ -122,6 +130,10 @@ async function processIncidentCreated(rawPayload: string) {
 				dispatchId: dispatch.id,
 				incidentId: dispatch.incidentId,
 				vehicleId: dispatch.vehicleId,
+				emergencyService: nearest.vehicle.station.type,
+				responderId: nearest.vehicle.driver?.id ?? null,
+				responderName: nearest.vehicle.driver?.name ?? null,
+				region: nearest.vehicle.station.name,
 				distanceKm: nearest.distanceKm,
 				dispatchedAt: dispatch.dispatchedAt,
 			},
@@ -169,11 +181,20 @@ async function loop() {
 			for (const [, entries] of records) {
 				for (const [entryId, fieldValues] of entries) {
 					const map = toMap(fieldValues);
+					console.log(
+						`[stream:consume] service=dispatch stream=${STREAM} group=${GROUP} consumer=${CONSUMER} entryId=${entryId} eventType=${map.eventType ?? "unknown"}`,
+					);
 					try {
 						if (map.eventType === "IncidentCreated" && map.payload) {
 							await processIncidentCreated(map.payload);
+							console.log(
+								`[stream:processed] service=dispatch stream=${STREAM} entryId=${entryId} eventType=${map.eventType}`,
+							);
 						}
 						await redis.xack(STREAM, GROUP, entryId);
+						console.log(
+							`[stream:ack] service=dispatch stream=${STREAM} group=${GROUP} entryId=${entryId}`,
+						);
 					} catch (error) {
 						console.error("Failed handling stream event:", error);
 					}

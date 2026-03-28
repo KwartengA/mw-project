@@ -17,11 +17,11 @@ import {
 	updateVehicleLocation,
 } from "./lib/vehicle";
 
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-	return Number(this);
-};
-
+declare global {
+	interface BigInt {
+		toJSON(): number;
+	}
+}
 const app = new Hono();
 
 const dispatch = app.basePath("/api/dispatch");

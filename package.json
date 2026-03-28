@@ -6,12 +6,13 @@
 	"main": "index.js",
 	"scripts": {
 		"dev": "pnpm --filter gateway dev",
+		"dev:analytics": "pnpm --filter analytics dev",
 		"dev:auth": "pnpm --filter auth dev",
 		"dev:gateway": "pnpm --filter gateway dev",
 		"dev:incident": "pnpm --filter incident dev",
 		"dev:dispatch": "pnpm --filter dispatch dev",
 		"dev:client": "pnpm --filter client dev",
-		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter common build && pnpm --filter incident build && pnpm --filter dispatch build && pnpm --filter client build"
+		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter common build && pnpm --filter incident build && pnpm --filter dispatch build && pnpm --filter client build && pnpm --filter analytics build"
 	},
 	"keywords": [],
 	"author": "",
@@ -21,12 +22,13 @@
 	},
 	"workspaces": {
 		"packages": [
+			"analytics",
 			"auth",
+			"client",
 			"common",
-			"gateway",
-			"incident",
 			"dispatch",
-			"client"
+			"gateway",
+			"incident"
 		]
 	},
 	"engines": {

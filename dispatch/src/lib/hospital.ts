@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { UpdateCapacitySchema } from "./dto";
 import { parse } from "./http";
+import { publishOutboxEvent } from "./outbox";
 import { prisma } from "./prisma.server";
 
 async function updateCapacity(c: Context) {
@@ -14,9 +15,29 @@ async function updateCapacity(c: Context) {
 	});
 	if (!hospital) return c.json({ detail: "not found" }, 404);
 
-	const updated = await prisma.hospital.update({
-		where: { id: Number(id) },
-		data,
+	const updated = await prisma.$transaction(async (tx) => {
+		const hospitalUpdated = await tx.hospital.update({
+			where: { id: Number(id) },
+			data,
+		});
+
+		await publishOutboxEvent(tx, {
+			aggregateType: "hospital",
+			aggregateId: String(hospitalUpdated.id),
+			eventType: "HospitalCapacityUpdated",
+			payload: {
+				hospitalId: hospitalUpdated.id,
+				hospitalName: hospitalUpdated.name,
+				region: hospitalUpdated.name,
+				totalBeds: hospitalUpdated.totalBeds,
+				availableBeds: hospitalUpdated.availableBeds,
+				totalAmbulances: hospitalUpdated.totalAmbulances,
+				availableAmbulances: hospitalUpdated.availableAmbulances,
+				capturedAt: new Date().toISOString(),
+			},
+		});
+
+		return hospitalUpdated;
 	});
 	return c.json(updated, 200);
 }

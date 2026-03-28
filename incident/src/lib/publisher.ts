@@ -15,7 +15,7 @@ async function publishBatch() {
 
 	for (const row of rows) {
 		try {
-			await redis.xadd(
+			const entryId = await redis.xadd(
 				STREAM,
 				"*",
 				"eventType",
@@ -26,6 +26,10 @@ async function publishBatch() {
 				row.aggregateId,
 				"payload",
 				serializePayload(row.payload),
+			);
+
+			console.log(
+				`[stream:publish] service=incident stream=${STREAM} entryId=${entryId} outboxId=${row.id} eventType=${row.eventType} aggregateType=${row.aggregateType} aggregateId=${row.aggregateId}`,
 			);
 
 			await markOutboxPublished(row.id);
