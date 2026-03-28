@@ -3,12 +3,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { serve } from "@hono/node-server";
+import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { authenticate } from "./lib/authenticate.js";
 import { login } from "./lib/login.js";
 import { getProfile, updateProfile } from "./lib/profile.js";
 import { register } from "./lib/register.js";
+import { openApiDoc } from "./lib/swagger.js";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -25,13 +27,17 @@ auth.post("/register", register);
 
 auth.post("/login", login);
 
+auth.get("/doc", (c) => c.json(openApiDoc));
+
+auth.get("/ui", swaggerUI({ url: "/auth/doc" }));
+
 auth.use("*", authenticate);
 
 auth.get("/profile", getProfile);
 
-auth.put("profile", updateProfile);
+auth.put("/profile", updateProfile);
 
-// []: TODO: extend to use refresh token and sessions (and logout)
+// []: TODO: add refresh token
 
 serve(
 	{
