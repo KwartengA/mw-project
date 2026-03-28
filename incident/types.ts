@@ -17,8 +17,12 @@ declare global {
 			escalationMins?: number; // how many minutes can pass at that priority before escalation or auto-alert rules trigger (would need crons in the future)
 		};
 
-		type IncidentMetadata = Record<string, unknown>;
-
+		type IncidentMetadata = {
+			callerName: string;
+			callerContact: string;
+			notes?: string;
+		};
+		
 		type ResponderLocation = {
 			lat: number;
 			lng: number;

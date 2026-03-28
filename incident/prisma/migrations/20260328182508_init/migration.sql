@@ -7,15 +7,9 @@ CREATE TYPE "Status" AS ENUM ('created', 'dispatched', 'in_progress', 'resolved'
 -- CreateEnum
 CREATE TYPE "OutboxStatus" AS ENUM ('pending', 'published', 'failed');
 
--- CreateEnum
-CREATE TYPE "ResponderType" AS ENUM ('ambulance', 'fire', 'police', 'ems');
-
--- CreateEnum
-CREATE TYPE "ResponderStatus" AS ENUM ('available', 'dispatched', 'off_duty');
-
 -- CreateTable
 CREATE TABLE "Incident" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "type" JSONB NOT NULL,
     "description" TEXT,
     "location" JSONB NOT NULL,
@@ -37,7 +31,7 @@ CREATE TABLE "Incident" (
 CREATE TABLE "Outbox" (
     "id" SERIAL NOT NULL,
     "aggregateType" TEXT NOT NULL,
-    "aggregateId" TEXT NOT NULL,
+    "aggregateId" INTEGER NOT NULL,
     "topic" TEXT NOT NULL,
     "eventType" TEXT NOT NULL,
     "payload" JSONB NOT NULL,
@@ -50,24 +44,8 @@ CREATE TABLE "Outbox" (
     CONSTRAINT "Outbox_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Responder" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "type" "ResponderType" NOT NULL,
-    "status" "ResponderStatus" NOT NULL DEFAULT 'available',
-    "location" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Responder_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE INDEX "Incident_status_idx" ON "Incident"("status");
 
 -- CreateIndex
 CREATE INDEX "Outbox_status_createdAt_idx" ON "Outbox"("status", "createdAt");
-
--- CreateIndex
-CREATE INDEX "Responder_status_idx" ON "Responder"("status");

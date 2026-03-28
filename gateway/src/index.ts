@@ -8,6 +8,7 @@ import { logger } from "hono/logger";
 import { authenticate } from "./lib/authenticate.js";
 import { SERVICE_ROUTES } from "./lib/ingress.js";
 import { log } from "./lib/log.js";
+import { resolveRoute } from "./lib/resolve-route.js";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -18,7 +19,23 @@ const app = new Hono();
 
 app.use("*", logger());
 
-app.all("/auth/*", (c) => log(c, process.env.AUTH_SERVICE_URL!));
+app.all("/api/auth/*", (c) => log(c, process.env.AUTH_SERVICE_URL!));
+
+app.all("/api/*/doc", async (c) => {
+	const route = resolveRoute(c);
+
+	if (!route) return c.json({ detail: "Cannot resolve API route" }, 502);
+
+	return log(c, route.baseUrl);
+});
+
+app.all("/api/*/ui", async (c) => {
+	const route = resolveRoute(c);
+
+	if (!route) return c.json({ detail: "Cannot resolve API route" }, 502);
+
+	return log(c, route.baseUrl);
+});
 
 app.use("/api/*", authenticate);
 

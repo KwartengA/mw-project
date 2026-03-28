@@ -5,7 +5,7 @@ const openApiDoc = {
 		version: "1.0.0",
 		description: "Auth and profile endpoints",
 	},
-	servers: [{ url: "/auth" }],
+	servers: [{ url: "/api/auth" }],
 	components: {
 		securitySchemes: {
 			BearerAuth: {

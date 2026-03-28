@@ -29,7 +29,7 @@ async function nearby(c: Context) {
 	const { lat, lng, radius } = parsed.data;
 
 	// Using PostGIS extension
-	
+
 	// extract [lat, lng] from the location JSON, cast to geography, then filter by radius using a spatial index
 	// ST_DWithin takes meters so radius is multiplied by 1000, ST_Distance result is divided back to km
 	const items = await prisma.$queryRaw<NearbyIncident[]>`
@@ -52,11 +52,4 @@ async function nearby(c: Context) {
 	return c.json({ items }, 200);
 }
 
-async function listResponders(c: Context) {
-	const items = await prisma.responder.findMany({
-		orderBy: { status: "asc" },
-	});
-	return c.json({ items }, 200);
-}
-
-export { listResponders, nearby };
+export { nearby };

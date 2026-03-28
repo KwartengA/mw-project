@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Incident {
-  id           String    @id @default(uuid())
+  id           Int       @id @default(autoincrement())
   /// [IncidentType]
   type         Json
   description  String?
@@ -39,7 +39,7 @@ model Incident {
 model Outbox {
   id            Int          @id @default(autoincrement())
   aggregateType String
-  aggregateId   String
+  aggregateId   Int
   topic         String
   eventType     String
   payload       Json
@@ -50,19 +50,6 @@ model Outbox {
   publishedAt   DateTime?
 
   @@index([status, createdAt])
-}
-
-model Responder {
-  id        Int             @id @default(autoincrement())
-  name      String
-  type      ResponderType
-  status    ResponderStatus @default(available)
-  /// [ResponderLocation]
-  location  Json?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-
-  @@index([status])
 }
 
 enum Status {
@@ -77,17 +64,4 @@ enum OutboxStatus {
   pending
   published
   failed
-}
-
-enum ResponderType {
-  ambulance
-  fire
-  police
-  ems
-}
-
-enum ResponderStatus {
-  available
-  dispatched
-  off_duty
 }
