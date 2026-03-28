@@ -2,10 +2,13 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { getActiveDispatches, markDispatchArrived } from "./lib/dispatch";
-import { registerDriver } from "./lib/driver";
+import { registerDriver, updateDriverLocation } from "./lib/driver";
 import { updateCapacity } from "./lib/hospital";
+import { startIncidentConsumer } from "./lib/incident-consumer";
+import { startPublisher } from "./lib/publisher";
 import { tracking } from "./lib/tracking";
 import {
+	getAllVehicles,
 	getVehicle,
 	getVehicleLocation,
 	registerVehicle,
@@ -25,17 +28,21 @@ const dispatch = app.basePath("/dispatch");
 
 dispatch.get("/dispatches/active", getActiveDispatches);
 
-dispatch.get("/tracking/live", tracking); // websocket endpoint for real-time streamings
+dispatch.get("/tracking/live", tracking); // SSE streaming endpoint for live vehicle updates
+
+dispatch.get("/vehicles", getAllVehicles);
 
 dispatch.get("/vehicles/:id", getVehicle);
 
-dispatch.get("/vehicles/:id/location ", getVehicleLocation);
+dispatch.get("/vehicles/:id/location", getVehicleLocation);
 
-dispatch.post("/vehicles/:id/location ", updateVehicleLocation);
+dispatch.post("/vehicles/:id/location", updateVehicleLocation);
 
-dispatch.post("/vehicle/register ", registerVehicle);
+dispatch.post("/vehicles/register", registerVehicle);
 
-dispatch.post("/drivers/register ", registerDriver);
+dispatch.post("/drivers/register", registerDriver);
+
+dispatch.post("/drivers/:id/location", updateDriverLocation);
 
 dispatch.post("/dispatches/:id/arrive", markDispatchArrived);
 
@@ -48,5 +55,9 @@ serve(
 	},
 	(info) => {
 		console.log(`Server is running on http://localhost:${info.port}`);
+		startPublisher();
+		startIncidentConsumer().catch((error) => {
+			console.error("Failed to start incident consumer:", error);
+		});
 	},
 );
