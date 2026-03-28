@@ -8,8 +8,9 @@
 		"seed": "prisma db seed"
 	},
 	"dependencies": {
-		"@mw/common": "workspace:*",
 		"@hono/node-server": "^1.19.11",
+		"@hono/swagger-ui": "^0.6.1",
+		"@mw/common": "workspace:*",
 		"@prisma/adapter-pg": "^7.5.0",
 		"@prisma/client": "^7.5.0",
 		"dotenv": "^17.3.1",

@@ -1,4 +1,5 @@
 import { serve } from "@hono/node-server";
+import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { getActiveDispatches, markDispatchArrived } from "./lib/dispatch";
@@ -6,6 +7,7 @@ import { registerDriver, updateDriverLocation } from "./lib/driver";
 import { updateCapacity } from "./lib/hospital";
 import { startIncidentConsumer } from "./lib/incident-consumer";
 import { startPublisher } from "./lib/publisher";
+import { openApiDoc } from "./lib/swagger";
 import { tracking } from "./lib/tracking";
 import {
 	getAllVehicles,
@@ -22,9 +24,9 @@ BigInt.prototype.toJSON = function () {
 
 const app = new Hono();
 
-app.use(logger());
+const dispatch = app.basePath("/api/dispatch");
 
-const dispatch = app.basePath("/dispatch");
+app.use(logger());
 
 dispatch.get("/dispatches/active", getActiveDispatches);
 
@@ -46,7 +48,11 @@ dispatch.post("/drivers/:id/location", updateDriverLocation);
 
 dispatch.post("/dispatches/:id/arrive", markDispatchArrived);
 
-app.put("/hospital/:id/capacity", updateCapacity);
+dispatch.put("/hospital/:id/capacity", updateCapacity);
+
+dispatch.get("/doc", (c) => c.json(openApiDoc));
+
+dispatch.get("/ui", swaggerUI({ url: "/api/dispatch/doc" }));
 
 serve(
 	{
