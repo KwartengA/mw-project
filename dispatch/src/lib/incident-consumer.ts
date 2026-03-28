@@ -3,6 +3,7 @@ import { DispatchStatus, VehicleStatus } from "../generated/prisma/enums";
 import { GROUP, STREAM } from "./consts";
 import { publishOutboxEvent } from "./outbox";
 import { prisma } from "./prisma.server";
+import { haversineDistanceKm, toMap } from "./utils";
 
 type IncidentEventPayload = {
 	incident?: {
@@ -22,35 +23,6 @@ const CONSUMER = `dispatch-${process.pid}`;
 
 type StreamEntry = [entryId: string, fieldValues: string[]];
 type StreamBatch = [streamName: string, entries: StreamEntry[]];
-
-function toMap(fields: string[]) {
-	const out: Record<string, string> = {};
-	for (let i = 0; i < fields.length; i += 2) {
-		out[fields[i]] = fields[i + 1] ?? "";
-	}
-	return out;
-}
-
-function toRadians(value: number) {
-	return (value * Math.PI) / 180;
-}
-
-function haversineDistanceKm(
-	lat1: number,
-	lng1: number,
-	lat2: number,
-	lng2: number,
-) {
-	const dLat = toRadians(lat2 - lat1);
-	const dLng = toRadians(lng2 - lng1);
-	const a =
-		Math.sin(dLat / 2) ** 2 +
-		Math.cos(toRadians(lat1)) *
-			Math.cos(toRadians(lat2)) *
-			Math.sin(dLng / 2) ** 2;
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	return 6371 * c;
-}
 
 function extractIncident(payload: IncidentEventPayload) {
 	const incident = payload.incident ?? payload;
