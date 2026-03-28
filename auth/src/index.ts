@@ -6,11 +6,11 @@ import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { authenticate } from "./lib/authenticate.js";
-import { login } from "./lib/login.js";
-import { getProfile, updateProfile } from "./lib/profile.js";
-import { register } from "./lib/register.js";
-import { openApiDoc } from "./lib/swagger.js";
+import { authenticate } from "./lib/authenticate";
+import { login } from "./lib/login";
+import { getProfile, updateProfile } from "./lib/profile";
+import { register } from "./lib/register";
+import { openApiDoc } from "./lib/swagger";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {

@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { swaggerUI } from "@hono/swagger-ui";
 import {
 	assign,
 	create,
@@ -11,6 +12,7 @@ import {
 } from "./lib/incident";
 import { startPublisher } from "./lib/publisher";
 import { listResponders, nearby } from "./lib/responders";
+import { openApiDoc } from "./lib/swagger";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () {
@@ -43,6 +45,10 @@ incident.get("/:id", get);
 incident.put("/:id/status", updateStatus);
 
 incident.put("/:id/assign", assign);
+
+incident.get("/doc", (c) => c.json(openApiDoc));
+
+incident.get("/ui", swaggerUI({ url: "/incident/doc" }));
 
 app.get("/responders", listResponders);
 
