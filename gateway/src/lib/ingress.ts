@@ -1,6 +1,6 @@
 export const SERVICE_ROUTES = [
 	{
-		prefix: "/api/incidents",
+		prefix: "/api/incident",
 		baseUrl: process.env.INCIDENTS_SERVICE_URL ?? "http://localhost:4001",
 		stripPrefix: false,
 	},

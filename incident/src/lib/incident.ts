@@ -28,10 +28,14 @@ async function create(c: Context) {
 }
 
 async function get(c: Context) {
-	const id = c.req.param("id");
-	if (!id) return c.json({ detail: "missing id" }, 400);
+	const idStr = c.req.param("id");
+	if (!idStr) return c.json({ detail: "missing id" }, 400);
+
+	const id = parseInt(idStr, 10);
+	if (Number.isNaN(id)) return c.json({ detail: "invalid id" }, 400);
 
 	const incident = await prisma.incident.findUnique({ where: { id } });
+	
 	if (!incident) return c.json({ detail: "not found" }, 404);
 
 	return c.json(incident, 200);
@@ -91,8 +95,11 @@ async function open(c: Context) {
 }
 
 async function updateStatus(c: Context) {
-	const id = c.req.param("id");
-	if (!id) return c.json({ detail: "missing id" }, 400);
+	const idStr = c.req.param("id");
+	if (!idStr) return c.json({ detail: "missing id" }, 400);
+
+	const id = Number.parseInt(idStr, 10);
+	if (Number.isNaN(id)) return c.json({ detail: "invalid id" }, 400);
 
 	const { status } = await parse(c, UpdateStatusSchema);
 
@@ -118,8 +125,11 @@ async function updateStatus(c: Context) {
 }
 
 async function assign(c: Context) {
-	const id = c.req.param("id");
-	if (!id) return c.json({ detail: "missing id" }, 400);
+	const idStr = c.req.param("id");
+	if (!idStr) return c.json({ detail: "missing id" }, 400);
+
+	const id = Number.parseInt(idStr, 10);
+	if (Number.isNaN(id)) return c.json({ detail: "invalid id" }, 400);
 
 	const { operatorId } = await parse(c, AssignSchema);
 

@@ -17,7 +17,13 @@ export const IncidentPrioritySchema = z.object({
 	escalationMins: z.number().optional(),
 });
 
-export const IncidentMetadataSchema = z.record(z.string(), z.any());
+export const IncidentMetadataSchema = z
+	.object({
+		callerName: z.string().min(1),
+		callerContact: z.string().min(1),
+		notes: z.string().optional(),
+	})
+	.strict();
 
 export const CreateIncidentSchema = z.object({
 	type: IncidentTypeSchema,

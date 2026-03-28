@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
+import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { swaggerUI } from "@hono/swagger-ui";
 import {
 	assign,
 	create,
@@ -11,7 +11,7 @@ import {
 	updateStatus,
 } from "./lib/incident";
 import { startPublisher } from "./lib/publisher";
-import { listResponders, nearby } from "./lib/responders";
+import { nearby } from "./lib/responders";
 import { openApiDoc } from "./lib/swagger";
 
 // @ts-ignore
@@ -23,7 +23,7 @@ const app = new Hono();
 
 app.use(logger());
 
-const incident = app.basePath("/incident");
+const incident = app.basePath("/api/incident");
 
 // Incident service is an internal app shielded behind the API gateway proxy.
 // Like other internal services, it does not authenticate request since all of
@@ -32,25 +32,23 @@ const incident = app.basePath("/incident");
 // We assume that a request received is authenticated and has the attached user claims
 // in the request headers
 
-incident.post("/", create);
+incident.post("", create);
 
-incident.get("/", listIncidents);
+incident.get("", listIncidents);
 
 incident.get("/open", open);
 
 incident.get("/nearby", nearby);
+
+incident.get("/doc", (c) => c.json(openApiDoc));
+
+incident.get("/ui", swaggerUI({ url: "/api/incident/doc" }));
 
 incident.get("/:id", get);
 
 incident.put("/:id/status", updateStatus);
 
 incident.put("/:id/assign", assign);
-
-incident.get("/doc", (c) => c.json(openApiDoc));
-
-incident.get("/ui", swaggerUI({ url: "/incident/doc" }));
-
-app.get("/responders", listResponders);
 
 serve(
 	{

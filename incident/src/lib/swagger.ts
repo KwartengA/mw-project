@@ -5,17 +5,21 @@ const openApiDoc = {
 		version: "1.0.0",
 		description: "Incident management and responder endpoints",
 	},
-	servers: [{ url: "/incident" }],
+	servers: [{ url: "/api/incident" }],
 	components: {
+		securitySchemes: {
+			bearerAuth: {
+				type: "http",
+				scheme: "bearer",
+				bearerFormat: "JWT",
+			},
+		},
 		schemas: {
 			Status: {
 				type: "string",
 				enum: ["created", "dispatched", "in_progress", "resolved", "cancelled"],
 			},
-			ResponderType: {
-				type: "string",
-				enum: ["ambulance", "fire", "police", "ems"],
-			},
+
 			ResponderStatus: {
 				type: "string",
 				enum: ["available", "dispatched", "off_duty"],
@@ -56,17 +60,26 @@ const openApiDoc = {
 				},
 				required: ["level"],
 			},
+			IncidentMetadata: {
+				type: "object",
+				properties: {
+					callerName: { type: "string" },
+					callerContact: { type: "string" },
+					notes: { type: "string" },
+				},
+				required: ["callerName", "callerContact"],
+				additionalProperties: false,
+			},
 			Incident: {
 				type: "object",
 				properties: {
-					id: { type: "string", format: "uuid" },
+					id: { type: "integer" },
 					type: { $ref: "#/components/schemas/IncidentType" },
 					description: { type: "string", nullable: true },
 					location: { $ref: "#/components/schemas/IncidentLocation" },
 					priority: { $ref: "#/components/schemas/IncidentPriority" },
 					metadata: {
-						type: "object",
-						additionalProperties: true,
+						$ref: "#/components/schemas/IncidentMetadata",
 						nullable: true,
 					},
 					status: { $ref: "#/components/schemas/Status" },
@@ -129,7 +142,7 @@ const openApiDoc = {
 					description: { type: "string" },
 					location: { $ref: "#/components/schemas/IncidentLocation" },
 					priority: { $ref: "#/components/schemas/IncidentPriority" },
-					metadata: { type: "object", additionalProperties: true },
+					metadata: { $ref: "#/components/schemas/IncidentMetadata" },
 				},
 				required: ["type", "location", "priority"],
 			},
@@ -206,6 +219,7 @@ const openApiDoc = {
 			},
 		},
 	},
+	security: [{ bearerAuth: [] }],
 	paths: {
 		"/": {
 			post: {
@@ -223,10 +237,24 @@ const openApiDoc = {
 				},
 				responses: {
 					"201": {
-						description: "Incident created",
+						description: "Validation error or invalid JSON body",
 						content: {
 							"application/json": {
-								schema: { $ref: "#/components/schemas/Incident" },
+								schema: {
+									oneOf: [
+										{ $ref: "#/components/schemas/ValidationError" },
+										{
+											type: "object",
+											required: ["detail"],
+											properties: {
+												detail: {
+													type: "string",
+													description: "Error message",
+												},
+											},
+										},
+									],
+								},
 							},
 						},
 					},
@@ -369,7 +397,7 @@ const openApiDoc = {
 						name: "id",
 						in: "path",
 						required: true,
-						schema: { type: "string", format: "uuid" },
+						schema: { type: "integer" },
 					},
 				],
 				responses: {
@@ -409,7 +437,7 @@ const openApiDoc = {
 						name: "id",
 						in: "path",
 						required: true,
-						schema: { type: "string", format: "uuid" },
+						schema: { type: "integer" },
 					},
 				],
 				requestBody: {
@@ -457,7 +485,7 @@ const openApiDoc = {
 						name: "id",
 						in: "path",
 						required: true,
-						schema: { type: "string", format: "uuid" },
+						schema: { type: "integer" },
 					},
 				],
 				requestBody: {
@@ -490,22 +518,6 @@ const openApiDoc = {
 						content: {
 							"application/json": {
 								schema: { $ref: "#/components/schemas/DetailError" },
-							},
-						},
-					},
-				},
-			},
-		},
-		"/responders": {
-			get: {
-				tags: ["Responders"],
-				summary: "List all responders",
-				responses: {
-					"200": {
-						description: "Responder list",
-						content: {
-							"application/json": {
-								schema: { $ref: "#/components/schemas/RespondersResponse" },
 							},
 						},
 					},

@@ -19,7 +19,7 @@ BigInt.prototype.toJSON = function () {
 
 const app = new Hono();
 
-const auth = app.basePath("/auth");
+const auth = app.basePath("/api/auth");
 
 auth.use("*", logger());
 
@@ -29,7 +29,7 @@ auth.post("/login", login);
 
 auth.get("/doc", (c) => c.json(openApiDoc));
 
-auth.get("/ui", swaggerUI({ url: "/auth/doc" }));
+auth.get("/ui", swaggerUI({ url: "/api/auth/doc" }));
 
 auth.use("*", authenticate);
 
