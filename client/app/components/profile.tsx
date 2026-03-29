@@ -16,7 +16,7 @@ function Profile() {
 					<Avatar name={user.name} />
 				</div>
 			</PopoverTrigger>
-			<PopoverContent className="z-50">
+			<PopoverContent className="z-100">
 				<ProfileMenu />
 			</PopoverContent>
 		</Popover>

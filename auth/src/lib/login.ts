@@ -42,7 +42,6 @@ export async function login(c: Context) {
 	const token = await sign(
 		{
 			sub: String(user.id),
-			email: user.email,
 			role: user.role,
 			name: user.name,
 			iat: now,

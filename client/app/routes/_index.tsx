@@ -1,9 +1,13 @@
 import { tryit } from "radashi";
+import React from "react";
 import {
 	type LoaderFunctionArgs,
 	type MetaFunction,
 	redirect,
 } from "react-router";
+import { AddIncidentModal } from "~/components/add-incident-modal";
+import { AddResourceModal } from "~/components/add-resource-modal";
+import { AffiliationBadge } from "~/components/affiliation";
 import GeospyMap from "~/components/map";
 import { Navbar } from "~/components/navbar";
 import Navigation from "~/components/navigation";
@@ -11,7 +15,7 @@ import { checkAuth } from "~/lib/check-auth";
 
 export const meta: MetaFunction = () => {
 	return [
-		{ title: "Welcome to Greatness" },
+		{ title: "Map App" },
 		{ name: "description", content: "Just do it!" },
 	];
 };
@@ -25,6 +29,39 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Index() {
+	const [mapFocus, setMapFocus] = React.useState({
+		lat: 5.614818,
+		lng: -0.205874,
+	});
+	const [incidentModalOpen, setIncidentModalOpen] = React.useState(false);
+	const [resourceModalOpen, setResourceModalOpen] = React.useState(false);
+	const [incidentCoords, setIncidentCoords] = React.useState<
+		{ lat: number; lng: number } | undefined
+	>(undefined);
+
+	function handleRequestIncidentAt(coords: { lat: number; lng: number }) {
+		setIncidentCoords(coords);
+		setIncidentModalOpen(true);
+	}
+
+	function handleIncidentCreated(incident: {
+		location?: { center?: number[] | null } | null;
+	}) {
+		const center = incident.location?.center;
+		if (!Array.isArray(center) || center.length < 2) return;
+
+		const lng = Number(center[0]);
+		const lat = Number(center[1]);
+		if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+		setMapFocus({ lat, lng });
+	}
+
+	function handleRequestResourceAt(coords: { lat: number; lng: number }) {
+		setIncidentCoords(coords);
+		setResourceModalOpen(true);
+	}
+
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="h-full flex-1 relative">
@@ -32,11 +69,29 @@ export default function Index() {
 					<Navigation />
 				</div>
 
-				<div className="absolute top-0 right-0 md:pt-3 p-2 md:px-3 z-100 flex justify-end">
+				<div className="absolute top-0 right-0 md:pt-3 p-2 md:px-3 z-100 flex items-center gap-2">
+					<AffiliationBadge />
 					<Navbar />
 				</div>
 
-				<GeospyMap initialLatLng={{ lat: 5.614818, lng: -0.205874 }} />
+				<GeospyMap
+					initialLatLng={mapFocus}
+					onRequestIncidentAt={handleRequestIncidentAt}
+					onRequestResourceAt={handleRequestResourceAt}
+				/>
+
+				<AddIncidentModal
+					open={incidentModalOpen}
+					onClose={() => setIncidentModalOpen(false)}
+					initialLatLng={incidentCoords}
+					onCreated={handleIncidentCreated}
+				/>
+
+				<AddResourceModal
+					open={resourceModalOpen}
+					onClose={() => setResourceModalOpen(false)}
+					initialLatLng={incidentCoords}
+				/>
 			</div>
 		</div>
 	);

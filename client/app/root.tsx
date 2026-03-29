@@ -3,6 +3,7 @@ import "react-spring-bottom-sheet/dist/style.css";
 import "virtual:uno.css";
 import "./styles.css";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { tryit } from "radashi";
 import {
 	data,
@@ -14,14 +15,16 @@ import {
 	ScrollRestoration,
 } from "react-router";
 import { PendingUI } from "./components/pending-ui";
-import { checkAuth } from "./lib/check-auth";
 import { useColorScheme } from "./lib/use-color-scheme";
+import { getUserProfile } from "./lib/user";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-	const [_, user] = await tryit(checkAuth)(request);
+	const [, user] = await tryit(getUserProfile)(request);
 
 	return data({ user });
 };
+
+const queryClient = new QueryClient();
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
@@ -46,5 +49,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
 	useColorScheme();
 
-	return <Outlet />;
+	return (
+		<QueryClientProvider client={queryClient}>
+			<Outlet />
+		</QueryClientProvider>
+	);
 }

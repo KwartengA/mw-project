@@ -34,7 +34,10 @@ const incident = app.basePath("/api/incident");
 // in the request headers
 
 incident.post("", create);
+incident.post("/", create);
 
+
+incident.get("/", listIncidents);
 incident.get("", listIncidents);
 
 incident.get("/open", open);

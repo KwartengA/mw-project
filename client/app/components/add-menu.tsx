@@ -11,14 +11,51 @@ export function AddMenu({
 	onAddResource,
 	onClose,
 }: AddMenuProps) {
+	const menuWidth = 344; // w-86
+	const menuHeightEstimate = 230;
+	const gap = 10;
+	const edgePadding = 8;
+
+	const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 0;
+	const viewportHeight = typeof window !== "undefined" ? window.innerHeight : 0;
+
+	const preferredLeft = position.x + gap;
+	const preferredTop = position.y + gap;
+	const fallbackTop = position.y - menuHeightEstimate - gap;
+
+	const maxLeft = Math.max(
+		edgePadding,
+		viewportWidth - menuWidth - edgePadding,
+	);
+	const left = Math.min(Math.max(preferredLeft, edgePadding), maxLeft);
+
+	const shouldFlipUp =
+		viewportHeight > 0 &&
+		preferredTop + menuHeightEstimate > viewportHeight - edgePadding;
+	const unclampedTop = shouldFlipUp ? fallbackTop : preferredTop;
+	const maxTop = Math.max(
+		edgePadding,
+		viewportHeight - menuHeightEstimate - edgePadding,
+	);
+	const top = Math.min(Math.max(unclampedTop, edgePadding), maxTop);
+
 	return (
 		<div
-			className="absolute z-150 w-72 rounded-xl bg-white font-mono dark:bg-neutral-900 shadow-lg p-3 border border-zinc-200 dark:border-neutral-800"
-			style={{ left: position.x + 10, top: position.y + 10 }}
+			className="absolute z-150 w-86 rounded-xl bg-white font-mono dark:bg-neutral-900 shadow-lg p-3 border border-zinc-200 dark:border-neutral-800"
+			style={{ left, top }}
 		>
-			<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-				Add Here
-			</h3>
+			<div className="mb-2 flex items-center justify-between">
+				<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+					Add Here
+				</h3>
+				<button
+					type="button"
+					onClick={onClose}
+					className="text-sm md:text-lg rounded-full bg-zinc-100 dark:bg-neutral-800 hover:bg-zinc-200 dark:hover:bg-neutral-700 p-1 text-zinc-500"
+				>
+					<div className="i-lucide-x" />
+				</button>
+			</div>
 			<div className="flex flex-col gap-2">
 				<button
 					type="button"
@@ -50,15 +87,6 @@ export function AddMenu({
 					<p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
 						Register a new resource at this location
 					</p>
-				</button>
-			</div>
-			<div className="mt-2 flex justify-end">
-				<button
-					type="button"
-					onClick={onClose}
-					className="rounded-md px-2 py-1 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-neutral-800"
-				>
-					Close
 				</button>
 			</div>
 		</div>

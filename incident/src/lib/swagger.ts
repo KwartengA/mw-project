@@ -19,6 +19,10 @@ const openApiDoc = {
 				type: "string",
 				enum: ["created", "dispatched", "in_progress", "resolved", "cancelled"],
 			},
+			ResponderType: {
+				type: "string",
+				enum: ["police", "fire", "hospital"],
+			},
 
 			ResponderStatus: {
 				type: "string",
@@ -237,24 +241,10 @@ const openApiDoc = {
 				},
 				responses: {
 					"201": {
-						description: "Validation error or invalid JSON body",
+						description: "Created incident",
 						content: {
 							"application/json": {
-								schema: {
-									oneOf: [
-										{ $ref: "#/components/schemas/ValidationError" },
-										{
-											type: "object",
-											required: ["detail"],
-											properties: {
-												detail: {
-													type: "string",
-													description: "Error message",
-												},
-											},
-										},
-									],
-								},
+								schema: { $ref: "#/components/schemas/Incident" },
 							},
 						},
 					},

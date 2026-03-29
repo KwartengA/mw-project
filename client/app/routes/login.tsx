@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { tryit } from "radashi";
 import React, { useState } from "react";
-import { type FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
 	type ActionFunctionArgs,
 	Link,
@@ -15,7 +15,16 @@ import {
 import { checkAuth } from "~/lib/check-auth";
 import { authCookie } from "~/lib/cookies.server";
 import { methodNotAllowed } from "~/lib/responses";
-import type { ActionData, AuthFormValues } from "~/lib/types";
+import type {
+	ActionData,
+	AuthFormValues,
+	LoginPayload,
+	RegisterPayload,
+} from "~/lib/types";
+
+type AuthActionPayload =
+	| ({ activeTab: "login" } & LoginPayload)
+	| ({ activeTab: "signup" } & RegisterPayload);
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const [_, user] = await tryit(checkAuth)(request);
@@ -30,13 +39,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 		throw methodNotAllowed();
 	}
 
-	const payload = await request.json();
+	const payload = (await request.json()) as AuthActionPayload;
 	const isSignup = payload.activeTab === "signup";
 
 	const BASE_URL = process.env.GATEWAY_BASE!;
 	const url = isSignup ? `${BASE_URL}/auth/register` : `${BASE_URL}/auth/login`;
 
-	const { activeTab, ...rest } = payload;
+	const rest: LoginPayload | RegisterPayload =
+		payload.activeTab === "signup"
+			? {
+					name: payload.name,
+					email: payload.email,
+					password: payload.password,
+					affiliation: payload.affiliation,
+					role: payload.role,
+				}
+			: {
+					email: payload.email,
+					password: payload.password,
+				};
 
 	const response = await fetch(url, {
 		method: "POST",
@@ -102,12 +123,12 @@ export default function Login() {
 		setSubmittedTab(undefined);
 	}, [navigation.state, submittedTab, actionData, errorMessage]);
 
-	async function login(data: FieldValues) {
+	async function login(data: AuthFormValues) {
 		setSubmittedTab(activeTab);
 
 		const payload =
 			activeTab === "signup"
-				? { ...data, activeTab, affiliation: "system", role: "admin" }
+				? { ...data, activeTab, role: "admin" }
 				: { ...data, activeTab };
 
 		submit(JSON.stringify(payload), {
@@ -186,12 +207,28 @@ export default function Login() {
 						className="mx-auto flex w-full max-w-md flex-col gap-4"
 					>
 						{activeTab === "signup" && (
-							<input
-								{...register("name")}
-								type="text"
-								placeholder="Full name"
-								className="w-full rounded-full border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 outline-none transition focus:ring-2 focus:ring-stone-300"
-							/>
+							<>
+								<input
+									{...register("name")}
+									type="text"
+									placeholder="Full name"
+									className="w-full rounded-full border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 outline-none transition focus:ring-2 focus:ring-stone-300"
+								/>
+
+								<select
+									{...register("affiliation", { required: true })}
+									defaultValue=""
+									className="w-full rounded-full border border-stone-300 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:ring-2 focus:ring-stone-300"
+								>
+									<option value="" disabled>
+										Select affiliation
+									</option>
+									<option value="police">Police</option>
+									<option value="fire">Fire</option>
+									<option value="hospital">Hospital</option>
+									<option value="system">System</option>
+								</select>
+							</>
 						)}
 
 						<input

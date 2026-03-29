@@ -1,7 +1,12 @@
 import * as jose from "jose";
 import { authCookie } from "./cookies.server";
 import { unauthorized } from "./responses";
-import type { JwtUser } from "./types";
+
+export type JwtUser = {
+	sub: string;
+	name: string;
+	role: string;
+};
 
 export async function checkAuth(
 	request: Request,

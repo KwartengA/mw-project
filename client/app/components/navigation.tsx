@@ -1,15 +1,9 @@
 import { useAtom } from "jotai";
-import React from "react";
 import { activePanelAtom, type NavPanel } from "~/lib/store";
-import type { AddItem } from "~/lib/types";
 import { cn } from "~/lib/utils";
-import { AddIncidentModal } from "./add-incident-modal";
-import { AddPanel } from "./add-panel";
-import { AddResourceModal } from "./add-resource-modal";
 import { NavQPanel as NavPanelShell } from "./nav-panel";
 
 const items = [
-	{ id: "add", icon: "i-lucide-plus", label: "Add" },
 	{
 		id: "incidents",
 		icon: "i-solar-danger-triangle-linear",
@@ -20,32 +14,28 @@ const items = [
 		icon: "i-solar-box-linear",
 		label: "Resources",
 	},
-	{ id: "analytics", icon: "i-solar-cloud-file-outline", label: "Analytics" },
+	{ id: "dashboard", icon: "i-solar-code-scan-bold", label: "Dashboard" },
+	{ id: "analytics", icon: "i-solar-chart-2-bold-duotone", label: "Analytics" },
 ] as const;
 
 export default function Navigation() {
 	const [activePanel, setActivePanel] = useAtom(activePanelAtom);
-	const [addPanelOpen, setAddPanelOpen] = React.useState(false);
-	const [addModal, setAddModal] = React.useState<AddItem | null>(null);
+
+	const fullScreenPanelOpen =
+		activePanel === "dashboard" || activePanel === "analytics";
 
 	return (
 		<>
 			<div className="flex gap-2 items-start h-[calc(100vh-1.5rem)]">
 				<nav className="flex flex-col gap-1 rounded-xl bg-white dark:bg-neutral-900 shadow-lg p-1">
 					{items.map(({ id, icon, label }) => {
-						const active = id === "add" ? addPanelOpen : activePanel === id;
+						const active = activePanel === id;
 						return (
 							<button
 								key={id}
 								type="button"
 								title={label}
 								onClick={() => {
-									if (id === "add") {
-										setAddPanelOpen((v) => !v);
-										setActivePanel(null);
-										return;
-									}
-									setAddPanelOpen(false);
 									setActivePanel(activePanel === id ? null : (id as NavPanel));
 								}}
 								className={cn(
@@ -61,19 +51,14 @@ export default function Navigation() {
 					})}
 				</nav>
 
-				{addPanelOpen && <AddPanel onSelect={(item) => setAddModal(item)} />}
-
-				{activePanel && <NavPanelShell panel={activePanel} />}
+				{activePanel && !fullScreenPanelOpen && (
+					<NavPanelShell panel={activePanel} />
+				)}
 			</div>
 
-			<AddIncidentModal
-				open={addModal === "incident"}
-				onClose={() => setAddModal(null)}
-			/>
-			<AddResourceModal
-				open={addModal === "resource"}
-				onClose={() => setAddModal(null)}
-			/>
+			{fullScreenPanelOpen && activePanel && (
+				<NavPanelShell panel={activePanel} />
+			)}
 		</>
 	);
 }

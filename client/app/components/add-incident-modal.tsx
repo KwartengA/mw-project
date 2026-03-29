@@ -1,30 +1,26 @@
+import { useLoadScript } from "@react-google-maps/api";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { Modal } from "~/components/modal";
+import { reverseGeocode } from "~/lib/google";
+import type { CreateIncidentPayload, Incident } from "~/lib/types";
+import { useIncidents } from "~/lib/use-incidents";
 
-const INCIDENT_TYPES = [
+const INCIDENT_TYPES: Array<{
+	code: CreateIncidentPayload["type"]["code"];
+	category: NonNullable<CreateIncidentPayload["type"]["category"]>;
+}> = [
 	{ code: "FIRE", category: "Natural" },
 	{ code: "FLOOD", category: "Natural" },
 	{ code: "ACCIDENT", category: "Traffic" },
 	{ code: "MEDICAL", category: "Health" },
 	{ code: "SECURITY", category: "Crime" },
-] as const;
+	{ code: "OTHER", category: "Other" },
+];
 
-type FormValues = {
-	// type
-	typeCode: string;
-	typeCategory: string;
-	// description
-	description: string;
-	// location
-	address: string;
+type IncidentFormData = CreateIncidentPayload & {
 	lat: number;
 	lng: number;
-	radius: number;
-	// priority
-	priorityLevel: "low" | "medium" | "high";
-	// metadata
-	citizenName: string;
-	citizenPhone: string;
 };
 
 const inputClass =
@@ -36,39 +32,99 @@ const labelClass =
 export function AddIncidentModal({
 	open,
 	onClose,
+	initialLatLng,
+	onCreated,
 }: {
 	open: boolean;
 	onClose: () => void;
+	initialLatLng?: { lat: number; lng: number };
+	onCreated?: (incident: Incident) => void;
 }) {
-	const { register, handleSubmit, reset } = useForm<FormValues>({
-		defaultValues: {
-			priorityLevel: "medium",
-			radius: 0,
-		},
+	const { create } = useIncidents();
+	const { isLoaded: isGoogleLoaded } = useLoadScript({
+		googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+		libraries: ["places"],
 	});
+	const [isResolvingAddress, setIsResolvingAddress] = React.useState(false);
+	const { register, handleSubmit, reset, setValue } = useForm<IncidentFormData>(
+		{
+			defaultValues: {
+				type: { code: "", category: "" },
+				description: "",
+				location: { address: "", radius: 0, center: [0, 0] },
+				priority: { level: "medium" },
+				metadata: { callerName: "", callerContact: "", notes: "" },
+				lat: 0,
+				lng: 0,
+			},
+		},
+	);
 
-	function onSubmit(data: FormValues) {
-		const payload = {
+	React.useEffect(() => {
+		if (!open || !initialLatLng) return;
+
+		const lat = Number(initialLatLng.lat.toFixed(6));
+		const lng = Number(initialLatLng.lng.toFixed(6));
+		setValue("lat", lat);
+		setValue("lng", lng);
+
+		if (!isGoogleLoaded) return;
+
+		let isMounted = true;
+		setIsResolvingAddress(true);
+
+		(async () => {
+			try {
+				const address = await reverseGeocode(lng, lat);
+				if (!isMounted) return;
+				setValue("location.address", address || "");
+			} catch {
+				if (!isMounted) return;
+				setValue("location.address", "");
+			} finally {
+				if (isMounted) {
+					setIsResolvingAddress(false);
+				}
+			}
+		})();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [open, initialLatLng, isGoogleLoaded, setValue]);
+
+	function onSubmit(data: IncidentFormData) {
+		const inferredCategory =
+			INCIDENT_TYPES.find((type) => type.code === data.type.code)?.category ||
+			undefined;
+
+		const payload: CreateIncidentPayload = {
 			type: {
-				code: data.typeCode,
-				category: data.typeCategory || undefined,
+				code: data.type.code,
+				category: data.type.category || inferredCategory,
 			},
 			description: data.description || undefined,
 			location: {
-				address: data.address,
-				center: [data.lat, data.lng] as [number, number],
-				radius: data.radius,
+				address: data.location.address,
+				center: [data.lng, data.lat] as [number, number],
+				radius: data.location.radius,
 			},
 			priority: {
-				level: data.priorityLevel,
+				level: data.priority.level,
 			},
 			metadata: {
-				citizenName: data.citizenName,
-				citizenPhone: data.citizenPhone,
+				callerName: data.metadata?.callerName ?? "",
+				callerContact: data.metadata?.callerContact ?? "",
+				notes: data.description || undefined,
 			},
 		};
 
-		console.log(payload); // replace with fetcher.submit or API call
+		create.mutate(payload, {
+			onSuccess: (incident) => {
+				onCreated?.(incident);
+				handleClose();
+			},
+		});
 	}
 
 	function handleClose() {
@@ -92,7 +148,7 @@ export function AddIncidentModal({
 						<div>
 							<label className={labelClass}>Full Name</label>
 							<input
-								{...register("citizenName", { required: true })}
+								{...register("metadata.callerName", { required: true })}
 								type="text"
 								placeholder="John Doe"
 								className={inputClass}
@@ -101,7 +157,7 @@ export function AddIncidentModal({
 						<div>
 							<label className={labelClass}>Phone Number</label>
 							<input
-								{...register("citizenPhone")}
+								{...register("metadata.callerContact", { required: true })}
 								type="tel"
 								placeholder="+233 020 123 4567"
 								className={inputClass}
@@ -119,7 +175,7 @@ export function AddIncidentModal({
 						<div>
 							<label className={labelClass}>Type</label>
 							<select
-								{...register("typeCode", { required: true })}
+								{...register("type.code", { required: true })}
 								className={inputClass}
 							>
 								<option value="">Select type</option>
@@ -133,7 +189,7 @@ export function AddIncidentModal({
 						<div>
 							<label className={labelClass}>Category</label>
 							<input
-								{...register("typeCategory")}
+								{...register("type.category")}
 								type="text"
 								placeholder="e.g. Natural"
 								className={inputClass}
@@ -150,11 +206,17 @@ export function AddIncidentModal({
 					<div>
 						<label className={labelClass}>Address</label>
 						<input
-							{...register("address", { required: true })}
+							{...register("location.address", { required: true })}
 							type="text"
 							placeholder="Street address or landmark"
-							className={inputClass}
+							readOnly
+							className={`${inputClass} cursor-not-allowed bg-zinc-100 dark:bg-neutral-700`}
 						/>
+						{isResolvingAddress && (
+							<p className="mt-1 text-xs text-secondary">
+								Resolving address...
+							</p>
+						)}
 					</div>
 					<div className="grid grid-cols-3 gap-3">
 						<div>
@@ -180,7 +242,7 @@ export function AddIncidentModal({
 						<div>
 							<label className={labelClass}>Radius (m)</label>
 							<input
-								{...register("radius", { valueAsNumber: true })}
+								{...register("location.radius", { valueAsNumber: true })}
 								type="number"
 								min="0"
 								placeholder="0"
@@ -199,7 +261,7 @@ export function AddIncidentModal({
 						{(["low", "medium", "high"] as const).map((level) => (
 							<label key={level} className="flex-1 cursor-pointer">
 								<input
-									{...register("priorityLevel")}
+									{...register("priority.level")}
 									type="radio"
 									value={level}
 									className="sr-only peer"
@@ -241,9 +303,10 @@ export function AddIncidentModal({
 					</button>
 					<button
 						type="submit"
+						disabled={create.isPending}
 						className="rounded-lg px-4 py-2 text-sm bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium hover:opacity-90 transition-opacity"
 					>
-						Create Incident
+						{create.isPending ? "Creating..." : "Create Incident"}
 					</button>
 				</div>
 			</form>

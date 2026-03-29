@@ -1,18 +1,23 @@
 import { useAtom } from "jotai";
 import { activePanelAtom, type NavPanel } from "~/lib/store";
-import { AnalyticsPanel } from "./analytics-panel";
 import { IncidentsPanel } from "./incidents-panel";
+import { OperationsPanel } from "./operations-panel";
 import { ResourcesPanel } from "./resources-panel";
 
 export function NavQPanel({ panel }: { panel: NavPanel }) {
 	const [, setActivePanel] = useAtom(activePanelAtom);
 
-	if (panel === "analytics") {
-		return <AnalyticsPanel />;
+	if (panel === "dashboard" || panel === "analytics") {
+		return (
+			<OperationsPanel
+				initialTab={panel}
+				onClose={() => setActivePanel(null)}
+			/>
+		);
 	}
 
 	return (
-		<div className="h-full w-120 rounded-2xl bg-white dark:bg-neutral-900 shadow-lg overflow-hidden flex flex-col">
+		<div className="h-full w-120 rounded-2xl bg-white dark:bg-neutral-900 shadow-lg overflow-hidden flex flex-col font-mono">
 			<header className="px-4 py-3 border-b border-zinc-100 dark:border-neutral-800 flex items-center justify-between shrink-0">
 				<span className="font-semibold text-sm capitalize">{panel}</span>
 
