@@ -1,5 +1,5 @@
 import React from "react";
-import { useAnalytics, type TimeWindow } from "~/lib/use-analytics";
+import { type TimeWindow, useAnalytics } from "~/lib/use-analytics";
 import { useDispatchResources } from "~/lib/use-dispatch";
 import { useIncidents } from "~/lib/use-incidents";
 
@@ -40,8 +40,13 @@ export function DashboardPanel() {
 		activeDispatches,
 		isLoading: resourcesLoading,
 	} = useDispatchResources();
-	const { responseTimesQuery, incidentsByRegionQuery, isLoading, isError, error } =
-		useAnalytics(window);
+	const {
+		responseTimesQuery,
+		incidentsByRegionQuery,
+		isLoading,
+		isError,
+		error,
+	} = useAnalytics(window);
 
 	const statusCounts = React.useMemo(() => {
 		const map = new Map<string, number>();
@@ -128,31 +133,49 @@ export function DashboardPanel() {
 
 			<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2">
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Open Incidents</p>
-					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{openIncidents}</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Open Incidents
+					</p>
+					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+						{openIncidents}
+					</p>
 				</div>
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Active Dispatches</p>
-					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{activeDispatches.length}</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Active Dispatches
+					</p>
+					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+						{activeDispatches.length}
+					</p>
 				</div>
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Responders Available</p>
-					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{respondersAvailable}</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Responders Available
+					</p>
+					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+						{respondersAvailable}
+					</p>
 				</div>
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Avg Response ({windowLabel(window)})</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Avg Response ({windowLabel(window)})
+					</p>
 					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
 						{fmtMinutes(responseTimesQuery.data?.overall.avgMinutes)}
 					</p>
 				</div>
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Total Dispatches</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Total Dispatches
+					</p>
 					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
 						{responseTimesQuery.data?.overall.totalDispatches ?? 0}
 					</p>
 				</div>
 				<div className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
-					<p className="text-[11px] uppercase tracking-wide text-secondary">Arrived Units</p>
+					<p className="text-[11px] uppercase tracking-wide text-secondary">
+						Arrived Units
+					</p>
 					<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
 						{responseTimesQuery.data?.overall.totalArrived ?? 0}
 					</p>
@@ -162,7 +185,9 @@ export function DashboardPanel() {
 			<div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
 				<section className="xl:col-span-2 rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
 					<div className="flex items-center justify-between">
-						<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Response Time By Service</h3>
+						<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+							Response Time By Service
+						</h3>
 						<p className="text-xs text-secondary">P95 shows worst-case tail</p>
 					</div>
 					<div className="mt-3 space-y-2">
@@ -172,10 +197,17 @@ export function DashboardPanel() {
 							const p95Width = `${Math.min(100, ((row.p95Minutes ?? 0) / cap) * 100)}%`;
 
 							return (
-								<div key={row.emergencyService} className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5">
+								<div
+									key={row.emergencyService}
+									className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5"
+								>
 									<div className="flex items-center justify-between text-xs">
-										<p className="font-medium capitalize text-zinc-800 dark:text-zinc-200">{row.emergencyService.replace("_", " ")}</p>
-										<p className="text-secondary">{row.totalArrived}/{row.totalDispatches} arrived</p>
+										<p className="font-medium capitalize text-zinc-800 dark:text-zinc-200">
+											{row.emergencyService.replace("_", " ")}
+										</p>
+										<p className="text-secondary">
+											{row.totalArrived}/{row.totalDispatches} arrived
+										</p>
 									</div>
 									<div className="mt-2 space-y-1.5">
 										<div>
@@ -184,7 +216,10 @@ export function DashboardPanel() {
 												<span>{fmtMinutes(row.avgMinutes)}</span>
 											</div>
 											<div className="h-2 rounded bg-zinc-100 dark:bg-neutral-800 mt-1 overflow-hidden">
-												<div className={`h-full ${serviceTone(row.emergencyService)}`} style={{ width: avgWidth }} />
+												<div
+													className={`h-full ${serviceTone(row.emergencyService)}`}
+													style={{ width: avgWidth }}
+												/>
 											</div>
 										</div>
 										<div>
@@ -193,7 +228,10 @@ export function DashboardPanel() {
 												<span>{fmtMinutes(row.p95Minutes)}</span>
 											</div>
 											<div className="h-2 rounded bg-zinc-100 dark:bg-neutral-800 mt-1 overflow-hidden">
-												<div className={`h-full ${serviceTone(row.emergencyService)} opacity-60`} style={{ width: p95Width }} />
+												<div
+													className={`h-full ${serviceTone(row.emergencyService)} opacity-60`}
+													style={{ width: p95Width }}
+												/>
 											</div>
 										</div>
 									</div>
@@ -204,18 +242,26 @@ export function DashboardPanel() {
 				</section>
 
 				<section className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Incident Status Mix</h3>
+					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+						Incident Status Mix
+					</h3>
 					<div className="mt-3 space-y-2">
 						{Array.from(statusCounts.entries()).map(([label, count]) => {
-							const pct = incidents.length > 0 ? (count / incidents.length) * 100 : 0;
+							const pct =
+								incidents.length > 0 ? (count / incidents.length) * 100 : 0;
 							return (
 								<div key={label}>
 									<div className="flex items-center justify-between text-xs">
-										<span className="text-zinc-700 dark:text-zinc-200">{label}</span>
+										<span className="text-zinc-700 dark:text-zinc-200">
+											{label}
+										</span>
 										<span className="text-secondary">{count}</span>
 									</div>
 									<div className="h-2 rounded bg-zinc-100 dark:bg-neutral-800 mt-1 overflow-hidden">
-										<div className="h-full bg-zinc-700 dark:bg-zinc-200" style={{ width: `${pct}%` }} />
+										<div
+											className="h-full bg-zinc-700 dark:bg-zinc-200"
+											style={{ width: `${pct}%` }}
+										/>
 									</div>
 								</div>
 							);
@@ -225,15 +271,24 @@ export function DashboardPanel() {
 			</div>
 
 			<section className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-				<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Top Regions ({windowLabel(window)})</h3>
+				<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+					Top Regions ({windowLabel(window)})
+				</h3>
 				<div className="mt-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-2">
 					{topRegions.length === 0 && (
-						<p className="text-xs text-secondary">No incidents recorded for selected range.</p>
+						<p className="text-xs text-secondary">
+							No incidents recorded for selected range.
+						</p>
 					)}
 					{topRegions.map((region) => (
-						<div key={region.region} className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5">
+						<div
+							key={region.region}
+							className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5"
+						>
 							<p className="text-xs text-secondary truncate">{region.region}</p>
-							<p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mt-1">{region.count}</p>
+							<p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mt-1">
+								{region.count}
+							</p>
 							<p className="text-[11px] text-secondary">incidents</p>
 						</div>
 					))}

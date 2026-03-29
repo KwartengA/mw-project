@@ -1,7 +1,8 @@
 import type { components, paths } from "./api";
 
 export type AnalyticsRange = components["schemas"]["Range"];
-export type ResponseTimesOverall = components["schemas"]["ResponseTimesOverall"];
+export type ResponseTimesOverall =
+	components["schemas"]["ResponseTimesOverall"];
 export type ResponseTimesByService =
 	components["schemas"]["ResponseTimesByServiceItem"];
 export type IncidentsByRegionItem =

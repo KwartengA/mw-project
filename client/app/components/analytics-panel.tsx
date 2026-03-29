@@ -1,5 +1,5 @@
 import React from "react";
-import { useAnalytics, type TimeWindow } from "~/lib/use-analytics";
+import { type TimeWindow, useAnalytics } from "~/lib/use-analytics";
 
 function fmtMinutes(value: number | null | undefined) {
 	if (typeof value !== "number" || !Number.isFinite(value)) return "-";
@@ -33,7 +33,10 @@ export function AnalyticsPanel() {
 	const incidentTypeShare = React.useMemo(() => {
 		const grouped = new Map<string, number>();
 		for (const row of incidentsByRegionQuery.data?.breakdown ?? []) {
-			grouped.set(row.incidentType, (grouped.get(row.incidentType) ?? 0) + row.count);
+			grouped.set(
+				row.incidentType,
+				(grouped.get(row.incidentType) ?? 0) + row.count,
+			);
 		}
 		return Array.from(grouped.entries())
 			.map(([incidentType, count]) => ({ incidentType, count }))
@@ -66,7 +69,8 @@ export function AnalyticsPanel() {
 	}
 
 	const bedUsage = resourceUtilizationQuery.data?.bedUsage;
-	const topResponders = resourceUtilizationQuery.data?.topRespondersByService ?? {};
+	const topResponders =
+		resourceUtilizationQuery.data?.topRespondersByService ?? {};
 
 	return (
 		<div className="space-y-4">
@@ -99,12 +103,19 @@ export function AnalyticsPanel() {
 
 			<div className="grid grid-cols-1 xl:grid-cols-3 gap-3">
 				<section className="xl:col-span-2 rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Response Time Distribution</h3>
+					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+						Response Time Distribution
+					</h3>
 					<div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
 						{(responseTimesQuery.data?.byService ?? []).map((service) => (
-							<div key={service.emergencyService} className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-3">
+							<div
+								key={service.emergencyService}
+								className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-3"
+							>
 								<div className="flex items-center gap-2">
-									<span className={`${serviceGlyph(service.emergencyService)} size-5 text-zinc-500`} />
+									<span
+										className={`${serviceGlyph(service.emergencyService)} size-5 text-zinc-500`}
+									/>
 									<p className="text-xs font-semibold capitalize text-zinc-700 dark:text-zinc-200">
 										{service.emergencyService.replace("_", " ")}
 									</p>
@@ -112,20 +123,28 @@ export function AnalyticsPanel() {
 								<div className="mt-3 space-y-1 text-xs text-secondary">
 									<p className="flex items-center justify-between">
 										<span>Average</span>
-										<span className="font-medium text-zinc-800 dark:text-zinc-200">{fmtMinutes(service.avgMinutes)}</span>
+										<span className="font-medium text-zinc-800 dark:text-zinc-200">
+											{fmtMinutes(service.avgMinutes)}
+										</span>
 									</p>
 									<p className="flex items-center justify-between">
 										<span>P50</span>
-										<span className="font-medium text-zinc-800 dark:text-zinc-200">{fmtMinutes(service.p50Minutes)}</span>
+										<span className="font-medium text-zinc-800 dark:text-zinc-200">
+											{fmtMinutes(service.p50Minutes)}
+										</span>
 									</p>
 									<p className="flex items-center justify-between">
 										<span>P95</span>
-										<span className="font-medium text-zinc-800 dark:text-zinc-200">{fmtMinutes(service.p95Minutes)}</span>
+										<span className="font-medium text-zinc-800 dark:text-zinc-200">
+											{fmtMinutes(service.p95Minutes)}
+										</span>
 									</p>
 									<p className="flex items-center justify-between">
 										<span>Arrival Rate</span>
 										<span className="font-medium text-zinc-800 dark:text-zinc-200">
-											{typeof service.arrivalRate === "number" ? `${service.arrivalRate.toFixed(1)}%` : "-"}
+											{typeof service.arrivalRate === "number"
+												? `${service.arrivalRate.toFixed(1)}%`
+												: "-"}
 										</span>
 									</p>
 								</div>
@@ -135,7 +154,9 @@ export function AnalyticsPanel() {
 				</section>
 
 				<section className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Hospital Capacity Pressure</h3>
+					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+						Hospital Capacity Pressure
+					</h3>
 					<div className="mt-3 rounded-lg border border-zinc-200 dark:border-neutral-800 p-3">
 						<p className="text-xs text-secondary">Bed Usage</p>
 						<p className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -146,7 +167,9 @@ export function AnalyticsPanel() {
 						<div className="mt-2 h-2 rounded bg-zinc-100 dark:bg-neutral-800 overflow-hidden">
 							<div
 								className="h-full bg-emerald-500"
-								style={{ width: `${Math.max(0, Math.min(100, bedUsage?.usageRatePercent ?? 0))}%` }}
+								style={{
+									width: `${Math.max(0, Math.min(100, bedUsage?.usageRatePercent ?? 0))}%`,
+								}}
 							/>
 						</div>
 						<div className="mt-2 text-[11px] text-secondary">
@@ -156,17 +179,22 @@ export function AnalyticsPanel() {
 						</div>
 					</div>
 					<div className="mt-2 text-[11px] text-secondary">
-						Hospitals considered: {resourceUtilizationQuery.data?.hospitalsConsidered ?? 0}
+						Hospitals considered:{" "}
+						{resourceUtilizationQuery.data?.hospitalsConsidered ?? 0}
 					</div>
 				</section>
 			</div>
 
 			<div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
 				<section className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Incident Type Mix</h3>
+					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+						Incident Type Mix
+					</h3>
 					<div className="mt-3 space-y-2">
 						{incidentTypeShare.length === 0 && (
-							<p className="text-xs text-secondary">No incident distribution for selected range.</p>
+							<p className="text-xs text-secondary">
+								No incident distribution for selected range.
+							</p>
 						)}
 						{incidentTypeShare.map((row) => {
 							const total = incidentsByRegionQuery.data?.totalIncidents ?? 0;
@@ -174,11 +202,16 @@ export function AnalyticsPanel() {
 							return (
 								<div key={row.incidentType}>
 									<div className="flex items-center justify-between text-xs">
-										<span className="text-zinc-700 dark:text-zinc-200">{row.incidentType}</span>
+										<span className="text-zinc-700 dark:text-zinc-200">
+											{row.incidentType}
+										</span>
 										<span className="text-secondary">{row.count}</span>
 									</div>
 									<div className="h-2 rounded bg-zinc-100 dark:bg-neutral-800 mt-1 overflow-hidden">
-										<div className="h-full bg-zinc-700 dark:bg-zinc-200" style={{ width: `${pct}%` }} />
+										<div
+											className="h-full bg-zinc-700 dark:bg-zinc-200"
+											style={{ width: `${pct}%` }}
+										/>
 									</div>
 								</div>
 							);
@@ -187,23 +220,35 @@ export function AnalyticsPanel() {
 				</section>
 
 				<section className="rounded-xl border border-zinc-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Top Responders By Service</h3>
+					<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+						Top Responders By Service
+					</h3>
 					<div className="mt-3 space-y-2 max-h-[360px] overflow-y-auto pr-1">
 						{Object.entries(topResponders).length === 0 && (
-							<p className="text-xs text-secondary">No responder deployment data available.</p>
+							<p className="text-xs text-secondary">
+								No responder deployment data available.
+							</p>
 						)}
 						{Object.entries(topResponders).map(([service, rows]) => (
-							<div key={service} className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5">
+							<div
+								key={service}
+								className="rounded-lg border border-zinc-200 dark:border-neutral-800 p-2.5"
+							>
 								<p className="text-xs font-semibold capitalize text-zinc-700 dark:text-zinc-200 mb-1.5">
 									{service.replace("_", " ")}
 								</p>
 								<ul className="space-y-1">
 									{rows.map((row) => (
-										<li key={`${service}-${row.responderId}`} className="flex items-center justify-between gap-2 text-xs">
+										<li
+											key={`${service}-${row.responderId}`}
+											className="flex items-center justify-between gap-2 text-xs"
+										>
 											<span className="truncate text-zinc-700 dark:text-zinc-200">
 												{row.responderName ?? `Responder ${row.responderId}`}
 											</span>
-											<span className="text-secondary">{row.deployments} deployments</span>
+											<span className="text-secondary">
+												{row.deployments} deployments
+											</span>
 										</li>
 									))}
 								</ul>
