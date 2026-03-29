@@ -20,7 +20,7 @@ export function OperationsPanel({ initialTab, onClose }: OperationsPanelProps) {
 		<div className="fixed inset-0 z-300 bg-zinc-50 dark:bg-neutral-950">
 			<div className="h-full w-full overflow-y-auto">
 				<header className="sticky top-0 z-10 font-mono bg-zinc-50/95 dark:bg-neutral-950/90 backdrop-blur border-b border-zinc-200 dark:border-neutral-800">
-					<div className="mx-auto w-full max-w-7xl px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+					<div className="mx-auto w-full max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
 						<div className="min-w-0">
 							<p className="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
 								Operations

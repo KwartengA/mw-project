@@ -7,6 +7,8 @@ import { registerDriver, updateDriverLocation } from "./lib/driver";
 import { updateCapacity } from "./lib/hospital";
 import { startIncidentConsumer } from "./lib/incident-consumer";
 import { startPublisher } from "./lib/publisher";
+import { startDispatchSimulation } from "./lib/simulator";
+import { getAllStations, registerStation, seedStations } from "./lib/station";
 import { openApiDoc } from "./lib/swagger";
 import { tracking } from "./lib/tracking";
 import {
@@ -31,6 +33,10 @@ app.use(logger());
 dispatch.get("/dispatches/active", getActiveDispatches);
 
 dispatch.get("/tracking/live", tracking); // SSE streaming endpoint for live vehicle updates
+
+dispatch.get("/stations", getAllStations);
+dispatch.post("/stations/register", registerStation);
+dispatch.post("/stations/seed", seedStations);
 
 dispatch.get("/vehicles", getAllVehicles);
 
@@ -62,6 +68,7 @@ serve(
 	(info) => {
 		console.log(`Server is running on http://localhost:${info.port}`);
 		startPublisher();
+		startDispatchSimulation();
 		startIncidentConsumer().catch((error) => {
 			console.error("Failed to start incident consumer:", error);
 		});

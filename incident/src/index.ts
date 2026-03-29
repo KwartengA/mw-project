@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { swaggerUI } from "@hono/swagger-ui";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { startDispatchConsumer } from "./lib/dispatch-consumer";
 import {
 	assign,
 	create,
@@ -36,7 +37,6 @@ const incident = app.basePath("/api/incident");
 incident.post("", create);
 incident.post("/", create);
 
-
 incident.get("/", listIncidents);
 incident.get("", listIncidents);
 
@@ -62,5 +62,8 @@ serve(
 	(info) => {
 		console.log(`Server is running on http://localhost:${info.port}`);
 		startPublisher();
+		startDispatchConsumer().catch((error) => {
+			console.error("Failed to start dispatch consumer:", error);
+		});
 	},
 );

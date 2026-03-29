@@ -16,6 +16,7 @@ import {
 } from "react-router";
 import { PendingUI } from "./components/pending-ui";
 import { useColorScheme } from "./lib/use-color-scheme";
+import { useDispatchLiveSync } from "./lib/use-dispatch";
 import { getUserProfile } from "./lib/user";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -25,6 +26,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 const queryClient = new QueryClient();
+
+function AppContent() {
+	useDispatchLiveSync();
+	return <Outlet />;
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
@@ -51,7 +57,7 @@ export default function App() {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<Outlet />
+			<AppContent />
 		</QueryClientProvider>
 	);
 }

@@ -18,3 +18,10 @@ export type IncidentFocusRequest = {
 };
 
 export const incidentFocusRequestAtom = atom<IncidentFocusRequest | null>(null);
+
+export type ResourceFocusRequest = {
+	vehicleId: number;
+	requestId: number;
+};
+
+export const resourceFocusRequestAtom = atom<ResourceFocusRequest | null>(null);

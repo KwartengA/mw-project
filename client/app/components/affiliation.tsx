@@ -17,7 +17,7 @@ export function AffiliationBadge() {
 				config.color,
 			)}
 		>
-			<div className={cn("size-4", config.icon)} />
+			<div className={cn("size-5", config.icon)} />
 			{config.label}
 		</div>
 	);

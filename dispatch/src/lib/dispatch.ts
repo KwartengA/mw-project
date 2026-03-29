@@ -1,7 +1,9 @@
 import type { Context } from "hono";
 import { DispatchStatus, VehicleStatus } from "../generated/prisma/enums";
+import { clearIncidentTarget } from "./incident-targets";
 import { publishOutboxEvent } from "./outbox";
 import { prisma } from "./prisma.server";
+import { publishTrackingUpdate } from "./tracking-bus";
 
 export async function getActiveDispatches(c: Context) {
 	const dispatches = await prisma.dispatch.findMany({
@@ -89,6 +91,17 @@ export async function markDispatchArrived(c: Context) {
 
 		return dispatch;
 	});
+
+	await publishTrackingUpdate({
+		type: "dispatch.vehicle.arrived",
+		dispatchId: updated.id,
+		incidentId: updated.incidentId,
+		vehicleId: updated.vehicleId,
+		vehicleStatus: VehicleStatus.on_scene,
+		recordedAt: updated.arrivedAt,
+	});
+
+	clearIncidentTarget(updated.incidentId);
 
 	return c.json(updated);
 }

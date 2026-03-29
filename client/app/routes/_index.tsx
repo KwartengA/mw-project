@@ -62,6 +62,10 @@ export default function Index() {
 		setResourceModalOpen(true);
 	}
 
+	function handleResourceCreated(coords: { lat: number; lng: number }) {
+		setMapFocus(coords);
+	}
+
 	return (
 		<div className="h-screen flex flex-col">
 			<div className="h-full flex-1 relative">
@@ -91,6 +95,7 @@ export default function Index() {
 					open={resourceModalOpen}
 					onClose={() => setResourceModalOpen(false)}
 					initialLatLng={incidentCoords}
+					onCreated={handleResourceCreated}
 				/>
 			</div>
 		</div>

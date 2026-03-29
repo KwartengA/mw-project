@@ -139,7 +139,6 @@ export function AddIncidentModal({
 			</h4>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-				{/* Citizen info */}
 				<fieldset className="space-y-3">
 					<legend className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
 						Reporting Citizen
@@ -166,7 +165,6 @@ export function AddIncidentModal({
 					</div>
 				</fieldset>
 
-				{/* Incident type */}
 				<fieldset className="space-y-3">
 					<legend className="text-xs font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
 						Incident Type
@@ -227,6 +225,7 @@ export function AddIncidentModal({
 								step="any"
 								placeholder="5.6148"
 								className={inputClass}
+								disabled
 							/>
 						</div>
 						<div>
@@ -237,6 +236,7 @@ export function AddIncidentModal({
 								step="any"
 								placeholder="-0.2059"
 								className={inputClass}
+								disabled
 							/>
 						</div>
 						<div>

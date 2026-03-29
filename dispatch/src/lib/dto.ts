@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { VehicleStatus, VehicleType } from "../generated/prisma/enums";
+import {
+	StationType,
+	VehicleStatus,
+	VehicleType,
+} from "../generated/prisma/enums";
 
 export const RegisterVehicleSchema = z.object({
 	callSign: z.string().trim().min(1),
@@ -35,6 +39,22 @@ export const UpdateCapacitySchema = z.object({
 	totalAmbulances: z.number().int().min(0).optional(),
 });
 
+export const RegisterStationSchema = z.object({
+	name: z.string().trim().min(2),
+	type: z.enum(StationType),
+	location: z.object({
+		address: z.string().trim().min(3),
+		lat: z.number().min(-90).max(90),
+		lng: z.number().min(-180).max(180),
+	}),
+	respondersCount: z.union([z.literal(3), z.literal(4)]).default(4),
+});
+
+export const SeedStationsSchema = z.object({
+	reset: z.boolean().default(true),
+	profile: z.enum(["small", "full"]).default("full"),
+});
+
 export type RegisterVehiclePayload = z.infer<typeof RegisterVehicleSchema>;
 export type UpdateVehicleLocationPayload = z.infer<
 	typeof UpdateVehicleLocationSchema
@@ -43,3 +63,5 @@ export type RegisterDriverPayload = z.infer<typeof RegisterDriverSchema>;
 export type UpdateDriverLocationPayload = z.infer<
 	typeof UpdateDriverLocationSchema
 >;
+export type RegisterStationPayload = z.infer<typeof RegisterStationSchema>;
+export type SeedStationsPayload = z.infer<typeof SeedStationsSchema>;

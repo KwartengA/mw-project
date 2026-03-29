@@ -201,6 +201,91 @@ export const openApiDoc = {
 					totalAmbulances: { type: "integer", minimum: 0 },
 				},
 			},
+			RegisterStationRequest: {
+				type: "object",
+				properties: {
+					name: { type: "string", minLength: 2 },
+					type: { $ref: "#/components/schemas/StationType" },
+					location: { $ref: "#/components/schemas/ResourceLocation" },
+					respondersCount: {
+						type: "integer",
+						enum: [3, 4],
+						default: 4,
+					},
+				},
+				required: ["name", "type", "location"],
+			},
+			SeedStationsRequest: {
+				type: "object",
+				properties: {
+					reset: { type: "boolean", default: true },
+					profile: {
+						type: "string",
+						enum: ["small", "full"],
+						default: "full",
+					},
+				},
+			},
+			StationBootstrapResponse: {
+				type: "object",
+				properties: {
+					station: { $ref: "#/components/schemas/Station" },
+					respondersCount: { type: "integer" },
+					vehicleType: { $ref: "#/components/schemas/VehicleType" },
+					vehicles: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								id: { type: "integer" },
+								callSign: { type: "string" },
+								lat: { type: "number" },
+								lng: { type: "number" },
+							},
+							required: ["id", "callSign", "lat", "lng"],
+						},
+					},
+				},
+				required: ["station", "respondersCount", "vehicleType", "vehicles"],
+			},
+			SeedStationsResponse: {
+				type: "object",
+				properties: {
+					profile: { type: "string", enum: ["small", "full"] },
+					reset: { type: "boolean" },
+					stationsCreated: { type: "integer" },
+					vehiclesCreated: { type: "integer" },
+					respondersCreated: { type: "integer" },
+					stations: {
+						type: "array",
+						items: {
+							type: "object",
+							properties: {
+								id: { type: "integer" },
+								name: { type: "string" },
+								type: { $ref: "#/components/schemas/StationType" },
+								respondersCount: { type: "integer" },
+								vehicleType: { $ref: "#/components/schemas/VehicleType" },
+							},
+							required: [
+								"id",
+								"name",
+								"type",
+								"respondersCount",
+								"vehicleType",
+							],
+						},
+					},
+				},
+				required: [
+					"profile",
+					"reset",
+					"stationsCreated",
+					"vehiclesCreated",
+					"respondersCreated",
+					"stations",
+				],
+			},
 			VehicleLocationListResponse: {
 				type: "object",
 				properties: {
@@ -308,6 +393,91 @@ export const openApiDoc = {
 									type: "array",
 									items: { $ref: "#/components/schemas/Vehicle" },
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"/stations": {
+			get: {
+				tags: ["Stations"],
+				summary: "List stations",
+				responses: {
+					"200": {
+						description: "Stations",
+						content: {
+							"application/json": {
+								schema: {
+									type: "array",
+									items: { $ref: "#/components/schemas/Station" },
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"/stations/register": {
+			post: {
+				tags: ["Stations"],
+				summary: "Register a station and bootstrap responders",
+				requestBody: {
+					required: true,
+					content: {
+						"application/json": {
+							schema: { $ref: "#/components/schemas/RegisterStationRequest" },
+						},
+					},
+				},
+				responses: {
+					"201": {
+						description: "Station created and responders provisioned",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/StationBootstrapResponse",
+								},
+							},
+						},
+					},
+					"400": {
+						description: "Validation failed",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/ValidationError" },
+							},
+						},
+					},
+				},
+			},
+		},
+		"/stations/seed": {
+			post: {
+				tags: ["Stations"],
+				summary: "Seed demo stations and responders",
+				requestBody: {
+					required: false,
+					content: {
+						"application/json": {
+							schema: { $ref: "#/components/schemas/SeedStationsRequest" },
+						},
+					},
+				},
+				responses: {
+					"200": {
+						description: "Seed completed",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/SeedStationsResponse" },
+							},
+						},
+					},
+					"400": {
+						description: "Validation failed",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/ValidationError" },
 							},
 						},
 					},

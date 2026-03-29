@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import React from "react";
 import { resolveIncidentTypeIcon, statusClass } from "~/lib/config";
@@ -9,8 +10,17 @@ const statusBadgeFallbackClass =
 
 export function IncidentsPanel() {
 	const { items: incidents, isLoading, resolve } = useIncidents({ limit: 100 });
+	const queryClient = useQueryClient();
 	const requestIncidentFocus = useSetAtom(incidentFocusRequestAtom);
 	const [openOnly, setOpenOnly] = React.useState(false);
+
+	React.useEffect(() => {
+		const timer = setInterval(() => {
+			queryClient.invalidateQueries({ queryKey: ["incidents"] });
+		}, 3000);
+
+		return () => clearInterval(timer);
+	}, [queryClient]);
 
 	const openIncidents = React.useMemo(
 		() =>
@@ -91,7 +101,7 @@ export function IncidentsPanel() {
 						);
 
 						return (
-							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+							// biome-ignore lint/a11y/useKeyWithClickEvents: list item acts as a map focus trigger
 							<li
 								key={incident.id}
 								className="group flex items-center gap-2 px-3 py-2 bg-white dark:bg-neutral-900 hover:bg-zinc-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
