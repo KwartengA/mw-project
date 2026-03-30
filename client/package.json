@@ -38,7 +38,6 @@
 		"react-map-gl": "^8.1.0",
 		"react-router": "^7.9.6",
 		"react-router-hono-server": "^2.22.0",
-		"react-spring-bottom-sheet": "^3.4.1",
 		"unocss": "^66.5.9"
 	},
 	"devDependencies": {

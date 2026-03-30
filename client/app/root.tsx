@@ -1,5 +1,4 @@
 import "@unocss/reset/tailwind-compat.css";
-import "react-spring-bottom-sheet/dist/style.css";
 import "virtual:uno.css";
 import "./styles.css";
 
