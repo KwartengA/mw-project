@@ -1,4 +1,3 @@
-import { useMounted } from "@mw/common";
 import { useAtom } from "jotai";
 import "mapbox-gl/dist/mapbox-gl.css";
 import React from "react";
@@ -8,7 +7,6 @@ import {
 	Marker,
 	Map as MbMap,
 } from "react-map-gl/mapbox";
-
 import { AddMenu } from "~/components/add-menu";
 import { IncidentInfoCard } from "~/components/incident-info-card";
 import { resolveIncidentTypeIcon } from "~/lib/config";
@@ -25,6 +23,7 @@ import type {
 import { useColorScheme } from "~/lib/use-color-scheme";
 import { useDispatchResources } from "~/lib/use-dispatch";
 import { useIncidents } from "~/lib/use-incidents";
+import { useMounted } from "~/lib/use-mounted";
 
 interface Props {
 	initialLatLng?: { lat: number; lng: number; image?: string };

@@ -1,7 +1,7 @@
-import { useMounted } from "@mw/common";
 import clsx from "clsx";
 import React from "react";
 import ReactDOM from "react-dom";
+import { useMounted } from "~/lib/use-mounted";
 
 interface Props extends React.PropsWithChildren {
 	className?: string;

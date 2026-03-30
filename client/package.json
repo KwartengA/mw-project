@@ -19,7 +19,6 @@
 		"@iconify-json/solar": "^1.2.5",
 		"@iconify-json/svg-spinners": "^1.2.4",
 		"@julr/unocss-preset-forms": "^2.0.0",
-		"@mw/common": "workspace:*",
 		"@react-google-maps/api": "^2.20.8",
 		"@react-router/fs-routes": "^7.9.6",
 		"@react-router/node": "^7.9.6",
