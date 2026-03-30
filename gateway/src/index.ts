@@ -17,10 +17,15 @@ declare global {
 }
 
 const app = new Hono();
+const authServiceUrl = process.env.AUTH_SERVICE_URL?.trim();
+const safeAuthServiceUrl =
+	authServiceUrl && authServiceUrl.length > 0
+		? authServiceUrl
+		: "http://localhost:3000";
 
 app.use("*", logger());
 
-app.all("/api/auth/*", (c) => log(c, process.env.AUTH_SERVICE_URL!));
+app.all("/api/auth/*", (c) => log(c, safeAuthServiceUrl));
 
 app.all("/api/*/doc", async (c) => {
 	const route = resolveRoute(c);
@@ -58,5 +63,14 @@ serve(
 	},
 	(info) => {
 		console.log(`Gateway is running on http://localhost:${info.port}`);
+		console.log(
+			`Gateway routes: auth=${safeAuthServiceUrl}, incident=${SERVICE_ROUTES[0]?.baseUrl ?? "unset"}, dispatch=${SERVICE_ROUTES[1]?.baseUrl ?? "unset"}, analytics=${SERVICE_ROUTES[2]?.baseUrl ?? "unset"}`,
+		);
+
+		if (!authServiceUrl) {
+			console.warn(
+				"AUTH_SERVICE_URL is empty; defaulting to http://localhost:3000",
+			);
+		}
 	},
 );

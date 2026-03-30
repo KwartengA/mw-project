@@ -12,6 +12,9 @@
 		"dev:incident": "pnpm --filter incident dev",
 		"dev:dispatch": "pnpm --filter dispatch dev",
 		"dev:client": "pnpm --filter client dev",
+		"db:generate": "pnpm --filter auth db:generate && pnpm --filter incident db:generate && pnpm --filter dispatch db:generate && pnpm --filter analytics db:generate",
+		"db:migrate": "pnpm --filter auth db:migrate && pnpm --filter incident db:migrate && pnpm --filter dispatch db:migrate && pnpm --filter analytics db:migrate",
+		"db:migrate:deploy": "pnpm --filter auth db:migrate:deploy && pnpm --filter incident db:migrate:deploy && pnpm --filter dispatch db:migrate:deploy && pnpm --filter analytics db:migrate:deploy",
 		"postinstall": "node scripts/sync-envs.mjs && pnpm --filter auth build && pnpm --filter common build && pnpm --filter incident build && pnpm --filter dispatch build && pnpm --filter client build && pnpm --filter analytics build"
 	},
 	"keywords": [],
