@@ -45,6 +45,9 @@ importers:
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
       prisma:
         specifier: ^7.5.0
         version: 7.5.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -97,6 +100,9 @@ importers:
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
       prisma:
         specifier: ^7.5.0
         version: 7.5.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -319,6 +325,9 @@ importers:
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
       prisma:
         specifier: ^7.5.0
         version: 7.5.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
@@ -344,6 +353,9 @@ importers:
       '@types/node':
         specifier: ^20.11.17
         version: 20.19.37
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
       tsx:
         specifier: ^4.7.1
         version: 4.21.0
@@ -393,6 +405,9 @@ importers:
       '@types/pg':
         specifier: ^8.18.0
         version: 8.18.0
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
       prisma:
         specifier: ^7.5.0
         version: 7.5.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)

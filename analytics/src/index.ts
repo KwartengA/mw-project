@@ -8,7 +8,7 @@ import {
 	resourceUtilization,
 	responseTimes,
 } from "./lib/analytics";
-import { startAnalyticsConsumer } from "./lib/consumer.js";
+import { startAnalyticsConsumer } from "./lib/consumer";
 import { openApiDoc } from "./lib/swagger";
 
 declare global {

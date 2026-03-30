@@ -4,7 +4,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
-		"build": "rm -rf dist && prisma generate && tsc",
+		"build": "rm -rf dist && prisma generate && node build.mjs",
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
@@ -23,6 +23,7 @@
 	"devDependencies": {
 		"@types/node": "^20.11.17",
 		"@types/pg": "^8.18.0",
+		"esbuild": "^0.25.12",
 		"prisma": "^7.5.0",
 		"tsx": "^4.7.1",
 		"typescript": "^5.8.3"
