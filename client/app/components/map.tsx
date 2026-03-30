@@ -55,11 +55,47 @@ type MapMarkerResource = {
 	incidentId: string | undefined;
 };
 
+type MapMarkerStation = {
+	id: number;
+	name: string;
+	type: "ambulance" | "fire" | "police";
+	address: string;
+	lat: number;
+	lng: number;
+	responderCount: number;
+	activeDispatches: number;
+	hasActiveDispatches: boolean;
+};
+
 function vehicleMarkerGlyph(type: DispatchVehicleType) {
 	if (type === "ambulance") return "🚑";
 	if (type === "fire_truck") return "🚒";
 	if (type === "police_car") return "🚓";
 	return "🏍️";
+}
+
+function stationMarkerConfig(type: "ambulance" | "fire" | "police") {
+	if (type === "ambulance") {
+		return {
+			icon: "i-solar-ambulance-bold-duotone",
+			bg: "bg-blue-500 text-white",
+			ping: "bg-blue-500/30",
+		};
+	}
+
+	if (type === "fire") {
+		return {
+			icon: "i-solar-fire-bold-duotone",
+			bg: "bg-orange-500 text-white",
+			ping: "bg-orange-500/30",
+		};
+	}
+
+	return {
+		icon: "i-solar-shield-keyhole-bold-duotone",
+		bg: "bg-indigo-600 text-white",
+		ping: "bg-indigo-500/30",
+	};
 }
 
 function getMarkerTitle(incident: Incident) {
@@ -98,7 +134,7 @@ function MapContent({
 	const [, setMap] = useAtom(map);
 	const { scheme } = useColorScheme();
 	const { items: incidents } = useIncidents({ limit: 100 });
-	const { vehicles, activeDispatches } = useDispatchResources();
+	const { vehicles, activeDispatches, stations } = useDispatchResources();
 	const [addMenu, setAddMenu] = React.useState<{
 		x: number;
 		y: number;
@@ -109,6 +145,8 @@ function MapContent({
 		React.useState<MapMarkerIncident | null>(null);
 	const [selectedResource, setSelectedResource] =
 		React.useState<MapMarkerResource | null>(null);
+	const [selectedStation, setSelectedStation] =
+		React.useState<MapMarkerStation | null>(null);
 	const [focusRequest, setFocusRequest] = useAtom(incidentFocusRequestAtom);
 	const [resourceFocusRequest, setResourceFocusRequest] = useAtom(
 		resourceFocusRequestAtom,
@@ -169,6 +207,49 @@ function MapContent({
 	const activeDispatchByVehicle = React.useMemo(() => {
 		return new Map(activeDispatches.map((item) => [item.vehicleId, item]));
 	}, [activeDispatches]);
+
+	const vehiclesByStationId = React.useMemo(() => {
+		const grouped = new Map<number, typeof vehicles>();
+
+		for (const vehicle of vehicles) {
+			if (!vehicle.stationId) continue;
+			const existing = grouped.get(vehicle.stationId);
+			if (existing) {
+				existing.push(vehicle);
+				continue;
+			}
+			grouped.set(vehicle.stationId, [vehicle]);
+		}
+
+		return grouped;
+	}, [vehicles]);
+
+	const stationMarkers = React.useMemo<MapMarkerStation[]>(() => {
+		return stations
+			.map((station) => {
+				const lat = Number(station.location?.lat);
+				const lng = Number(station.location?.lng);
+				if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+				const stationVehicles = vehiclesByStationId.get(station.id) ?? [];
+				const activeCount = stationVehicles.reduce((count, vehicle) => {
+					return count + (activeDispatchByVehicle.has(vehicle.id) ? 1 : 0);
+				}, 0);
+
+				return {
+					id: station.id,
+					name: station.name,
+					type: station.type,
+					address: station.location?.address ?? "Unknown address",
+					lat,
+					lng,
+					responderCount: stationVehicles.length,
+					activeDispatches: activeCount,
+					hasActiveDispatches: activeCount > 0,
+				};
+			})
+			.filter((station): station is MapMarkerStation => station !== null);
+	}, [activeDispatchByVehicle, stations, vehiclesByStationId]);
 
 	const resourceMarkers = React.useMemo(() => {
 		return vehicles
@@ -232,6 +313,23 @@ function MapContent({
 		}
 	}, [resourceMarkers, selectedResource]);
 
+	React.useEffect(() => {
+		if (!selectedStation) return;
+
+		const refreshedSelection = stationMarkers.find(
+			(marker) => marker.id === selectedStation.id,
+		);
+
+		if (!refreshedSelection) {
+			setSelectedStation(null);
+			return;
+		}
+
+		if (refreshedSelection !== selectedStation) {
+			setSelectedStation(refreshedSelection);
+		}
+	}, [selectedStation, stationMarkers]);
+
 	const clearShowInfoTimer = React.useCallback(() => {
 		if (!showInfoTimerRef.current) return;
 		clearTimeout(showInfoTimerRef.current);
@@ -244,6 +342,7 @@ function MapContent({
 			setAddMenu(null);
 			setSelectedIncident(null);
 			setSelectedResource(null);
+			setSelectedStation(null);
 
 			if (mapRef.current) {
 				mapRef.current.flyTo({
@@ -269,6 +368,7 @@ function MapContent({
 			setAddMenu(null);
 			setSelectedIncident(null);
 			setSelectedResource(null);
+			setSelectedStation(null);
 
 			if (mapRef.current) {
 				mapRef.current.flyTo({
@@ -282,6 +382,32 @@ function MapContent({
 
 			showInfoTimerRef.current = setTimeout(() => {
 				setSelectedResource(marker);
+				showInfoTimerRef.current = null;
+			}, delayMs);
+		},
+		[clearShowInfoTimer],
+	);
+
+	const focusStationWithMicroInteraction = React.useCallback(
+		(marker: MapMarkerStation, delayMs = 450) => {
+			clearShowInfoTimer();
+			setAddMenu(null);
+			setSelectedIncident(null);
+			setSelectedResource(null);
+			setSelectedStation(null);
+
+			if (mapRef.current) {
+				mapRef.current.flyTo({
+					center: [marker.lng, marker.lat],
+					zoom: 14,
+					duration: 700,
+					offset: [0, window.innerWidth < 768 ? -120 : 0],
+					essential: true,
+				});
+			}
+
+			showInfoTimerRef.current = setTimeout(() => {
+				setSelectedStation(marker);
 				showInfoTimerRef.current = null;
 			}, delayMs);
 		},
@@ -403,6 +529,7 @@ function MapContent({
 				onClick={(event) => {
 					setSelectedIncident(null);
 					setSelectedResource(null);
+					setSelectedStation(null);
 					setAddMenu({
 						x: event.point.x,
 						y: event.point.y,
@@ -412,6 +539,40 @@ function MapContent({
 				}}
 				preserveDrawingBuffer
 			>
+				{stationMarkers.map((marker) => {
+					const config = stationMarkerConfig(marker.type);
+
+					return (
+						<Marker
+							key={`station-${marker.id}`}
+							latitude={marker.lat}
+							longitude={marker.lng}
+						>
+							<button
+								type="button"
+								onClick={(event) => {
+									event.preventDefault();
+									event.stopPropagation();
+									focusStationWithMicroInteraction(marker);
+								}}
+								className="relative m-0 border-0 bg-transparent p-0 appearance-none"
+								title={`${marker.name} (${marker.type})`}
+							>
+								{marker.hasActiveDispatches && (
+									<span
+										className={`absolute inset-0 m-auto size-14 rounded-full animate-ping ${config.ping}`}
+									/>
+								)}
+								<span
+									className={`relative flex size-10 items-center justify-center rounded-full shadow ${config.bg}`}
+								>
+									<span className={`${config.icon} size-6`} />
+								</span>
+							</button>
+						</Marker>
+					);
+				})}
+
 				{markers.map((marker) => {
 					const config = marker.typeIcon;
 
@@ -550,6 +711,51 @@ function MapContent({
 										<span>{selectedResource.incidentId}</span>
 									</>
 								)}
+							</div>
+						</div>
+					</Marker>
+				)}
+
+				{selectedStation && (
+					<Marker
+						latitude={selectedStation.lat}
+						longitude={selectedStation.lng}
+						anchor="top-left"
+						offset={[14, 14]}
+					>
+						<div className="w-72 rounded-xl bg-white font-mono dark:bg-neutral-900 shadow-lg p-3 border border-zinc-200 dark:border-neutral-800">
+							<div className="mb-2 flex items-center justify-between">
+								<h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+									{selectedStation.name}
+								</h3>
+								<button
+									type="button"
+									onClick={() => setSelectedStation(null)}
+									className="text-sm md:text-lg rounded-full bg-zinc-100 dark:bg-neutral-800 hover:bg-zinc-200 dark:hover:bg-neutral-700 p-1 text-zinc-500"
+								>
+									<div className="i-lucide-x" />
+								</button>
+							</div>
+							<div className="grid grid-cols-[88px_1fr] gap-x-2 gap-y-1 text-[11px] text-zinc-600 dark:text-zinc-300">
+								<span className="text-zinc-500 dark:text-zinc-400">Type</span>
+								<span className="capitalize">{selectedStation.type}</span>
+
+								<span className="text-zinc-500 dark:text-zinc-400">
+									Address
+								</span>
+								<span className="truncate" title={selectedStation.address}>
+									{selectedStation.address}
+								</span>
+
+								<span className="text-zinc-500 dark:text-zinc-400">
+									Responders
+								</span>
+								<span>{selectedStation.responderCount}</span>
+
+								<span className="text-zinc-500 dark:text-zinc-400">
+									Active Dispatches
+								</span>
+								<span>{selectedStation.activeDispatches}</span>
 							</div>
 						</div>
 					</Marker>
