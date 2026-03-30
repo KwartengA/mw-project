@@ -66,9 +66,6 @@ importers:
       '@hono/swagger-ui':
         specifier: ^0.6.1
         version: 0.6.1(hono@4.12.8)
-      '@mw/common':
-        specifier: workspace:*
-        version: link:../common
       '@prisma/adapter-pg':
         specifier: ^7.5.0
         version: 7.5.0
@@ -291,9 +288,6 @@ importers:
       '@hono/swagger-ui':
         specifier: ^0.6.1
         version: 0.6.1(hono@4.12.8)
-      '@mw/common':
-        specifier: workspace:*
-        version: link:../common
       '@prisma/adapter-pg':
         specifier: ^7.5.0
         version: 7.5.0
@@ -371,9 +365,6 @@ importers:
       '@hono/swagger-ui':
         specifier: ^0.6.1
         version: 0.6.1(hono@4.12.8)
-      '@mw/common':
-        specifier: workspace:*
-        version: link:../common
       '@prisma/adapter-pg':
         specifier: ^7.5.0
         version: 7.5.0

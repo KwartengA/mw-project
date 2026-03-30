@@ -20,7 +20,6 @@ type IncidentResponse = {
 
 const INCIDENT_SERVICE_URL =
 	process.env.INCIDENT_SERVICE_URL ?? "http://localhost:4001/api/incident";
-const INCIDENT_SERVICE_TOKEN = process.env.INCIDENT_SERVICE_TOKEN;
 
 function debugLog(event: string, payload: Record<string, unknown>) {
 	if (!DEBUG) return;
@@ -80,14 +79,8 @@ async function fetchIncidentTarget(incidentId: string) {
 		return null;
 	}
 
-	const headers = new Headers();
-	if (INCIDENT_SERVICE_TOKEN) {
-		headers.set("Authorization", `Bearer ${INCIDENT_SERVICE_TOKEN}`);
-	}
-
 	const response = await fetch(`${INCIDENT_SERVICE_URL}/${incidentId}`, {
 		method: "GET",
-		headers,
 	});
 
 	if (!response.ok) {
