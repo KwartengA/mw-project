@@ -10,7 +10,6 @@
 	"dependencies": {
 		"@hono/node-server": "^1.19.11",
 		"@hono/swagger-ui": "^0.6.1",
-		"@mw/common": "workspace:*",
 		"@prisma/adapter-pg": "^7.5.0",
 		"@prisma/client": "^7.5.0",
 		"argon2": "^0.44.0",
