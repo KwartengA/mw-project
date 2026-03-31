@@ -77,7 +77,7 @@ function vehicleMarkerGlyph(type: DispatchVehicleType) {
 function stationMarkerConfig(type: "ambulance" | "fire" | "police") {
 	if (type === "ambulance") {
 		return {
-			icon: "i-solar-ambulance-bold-duotone",
+			icon: "🏥",
 			bg: "bg-blue-500 text-white",
 			ping: "bg-blue-500/30",
 		};
@@ -85,14 +85,14 @@ function stationMarkerConfig(type: "ambulance" | "fire" | "police") {
 
 	if (type === "fire") {
 		return {
-			icon: "i-solar-fire-bold-duotone",
+			icon: "👨🏾‍🚒",
 			bg: "bg-orange-500 text-white",
 			ping: "bg-orange-500/30",
 		};
 	}
 
 	return {
-		icon: "i-solar-shield-keyhole-bold-duotone",
+		icon: "👮🏽",
 		bg: "bg-indigo-600 text-white",
 		ping: "bg-indigo-500/30",
 	};
