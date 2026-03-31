@@ -66,7 +66,7 @@ export default function Index() {
 		address: string,
 	) {
 		setSearchPin({ ...coords, address });
-		setMapFocus(coords); // fly the map there
+		setMapFocus(coords);
 	}
 
 	function handleRequestResourceAt(coords: { lat: number; lng: number }) {
@@ -85,7 +85,7 @@ export default function Index() {
 					<Navigation />
 				</div>
 
-				<div className="absolute top-0 right-0 md:pt-3 p-2 md:px-3 z-100 flex items-center gap-2">
+				<div className="absolute top-0 right-0 md:pt-3 p-2 md:px-3 flex items-center gap-2">
 					<MapLocationSearch onLocationSelect={handleLocationSearch} />
 					<AffiliationBadge />
 					<Navbar />
