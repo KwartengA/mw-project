@@ -17,7 +17,7 @@ export function MapLocationSearch({ onLocationSelect }: Props) {
 	});
 
 	return (
-		<div className="w-52 md:w-82">
+		<div className="w-52 md:w-72">
 			<LocationSearch
 				onLocationSelect={([lng, lat], address) =>
 					onLocationSelect({ lat, lng }, address ?? "")
