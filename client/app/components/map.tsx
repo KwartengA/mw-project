@@ -27,6 +27,8 @@ import { useMounted } from "~/lib/use-mounted";
 
 interface Props {
 	initialLatLng?: { lat: number; lng: number; image?: string };
+	searchPin?: { lat: number; lng: number; address: string };
+	onSearchPinDismiss?: () => void;
 	onRequestIncidentAt?: (coords: { lat: number; lng: number }) => void;
 	onRequestResourceAt?: (coords: { lat: number; lng: number }) => void;
 }
@@ -108,13 +110,17 @@ function GeospyMap({
 	initialLatLng,
 	onRequestIncidentAt,
 	onRequestResourceAt,
+	onSearchPinDismiss,
+	searchPin,
 }: Props) {
 	return (
 		<ClientOnly>
 			<MapContent
+				searchPin={searchPin}
 				initialLatLng={initialLatLng}
 				onRequestIncidentAt={onRequestIncidentAt}
 				onRequestResourceAt={onRequestResourceAt}
+				onSearchPinDismiss={onSearchPinDismiss}
 			/>
 		</ClientOnly>
 	);
@@ -130,6 +136,8 @@ function MapContent({
 	initialLatLng,
 	onRequestIncidentAt,
 	onRequestResourceAt,
+	searchPin,
+	onSearchPinDismiss,
 }: Props) {
 	const [, setMap] = useAtom(map);
 	const { scheme } = useColorScheme();
@@ -388,6 +396,36 @@ function MapContent({
 		[clearShowInfoTimer],
 	);
 
+	React.useEffect(() => {
+		if (!searchPin || !mapRef.current || !isLoaded) return;
+
+		clearShowInfoTimer();
+		setSelectedIncident(null);
+		setSelectedResource(null);
+		setSelectedStation(null);
+
+		mapRef.current.flyTo({
+			center: [searchPin.lng, searchPin.lat],
+			zoom: 15,
+			duration: 900,
+			essential: true,
+		});
+
+		// After the fly, open AddMenu at the canvas centre so the user can act
+		const timer = setTimeout(() => {
+			const canvas = mapRef.current?.getCanvas();
+			if (!canvas) return;
+			setAddMenu({
+				x: canvas.clientWidth / 2,
+				y: canvas.clientHeight / 2,
+				lat: searchPin.lat,
+				lng: searchPin.lng,
+			});
+		}, 950);
+
+		return () => clearTimeout(timer);
+	}, [isLoaded, clearShowInfoTimer, searchPin]);
+
 	const focusStationWithMicroInteraction = React.useCallback(
 		(marker: MapMarkerStation, delayMs = 450) => {
 			clearShowInfoTimer();
@@ -527,6 +565,7 @@ function MapContent({
 				ref={mapRef}
 				onLoad={handleLoad}
 				onClick={(event) => {
+					onSearchPinDismiss?.();
 					setSelectedIncident(null);
 					setSelectedResource(null);
 					setSelectedStation(null);
@@ -771,6 +810,35 @@ function MapContent({
 								alt="Initial"
 								className="h-full object-cover w-full"
 							/>
+						</div>
+					</Marker>
+				)}
+
+				{searchPin && (
+					<Marker
+						latitude={searchPin.lat}
+						longitude={searchPin.lng}
+						style={{ background: "transparent" }}
+					>
+						<div className="flex flex-col items-center">
+							<div className="relative flex size-10 items-center justify-center rounded-full bg-violet-600 shadow-lg ring-2 ring-white dark:ring-neutral-900">
+								<div className="i-lucide-map-pin size-5 text-white" />
+								{/* dismiss sits in the top-right corner of the pin bubble */}
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										onSearchPinDismiss?.();
+										setAddMenu(null);
+									}}
+									className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-white dark:bg-neutral-800 shadow text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-100 border border-zinc-200 dark:border-neutral-700"
+								>
+									<div className="i-lucide-x size-4" />
+								</button>
+							</div>
+							<div className="mt-1 max-w-[180px] truncate rounded-md bg-white px-2 py-0.5 text-[10px] font-medium shadow dark:bg-neutral-900 dark:text-zinc-200 border border-zinc-200 dark:border-neutral-700">
+								{searchPin.address.split(",")[0]}
+							</div>
 						</div>
 					</Marker>
 				)}

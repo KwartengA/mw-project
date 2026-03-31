@@ -9,6 +9,7 @@ import { AddIncidentModal } from "~/components/add-incident-modal";
 import { AddResourceModal } from "~/components/add-resource-modal";
 import { AffiliationBadge } from "~/components/affiliation";
 import GeospyMap from "~/components/map";
+import { MapLocationSearch } from "~/components/map-location-search";
 import { Navbar } from "~/components/navbar";
 import Navigation from "~/components/navigation";
 import { checkAuth } from "~/lib/check-auth";
@@ -38,6 +39,9 @@ export default function Index() {
 	const [incidentCoords, setIncidentCoords] = React.useState<
 		{ lat: number; lng: number } | undefined
 	>(undefined);
+	const [searchPin, setSearchPin] = React.useState<
+		{ lat: number; lng: number; address: string } | undefined
+	>(undefined);
 
 	function handleRequestIncidentAt(coords: { lat: number; lng: number }) {
 		setIncidentCoords(coords);
@@ -57,6 +61,14 @@ export default function Index() {
 		setMapFocus({ lat, lng });
 	}
 
+	function handleLocationSearch(
+		coords: { lat: number; lng: number },
+		address: string,
+	) {
+		setSearchPin({ ...coords, address });
+		setMapFocus(coords); // fly the map there
+	}
+
 	function handleRequestResourceAt(coords: { lat: number; lng: number }) {
 		setIncidentCoords(coords);
 		setResourceModalOpen(true);
@@ -74,16 +86,18 @@ export default function Index() {
 				</div>
 
 				<div className="absolute top-0 right-0 md:pt-3 p-2 md:px-3 z-100 flex items-center gap-2">
+					<MapLocationSearch onLocationSelect={handleLocationSearch} />
 					<AffiliationBadge />
 					<Navbar />
 				</div>
 
 				<GeospyMap
 					initialLatLng={mapFocus}
+					searchPin={searchPin}
+					onSearchPinDismiss={() => setSearchPin(undefined)}
 					onRequestIncidentAt={handleRequestIncidentAt}
 					onRequestResourceAt={handleRequestResourceAt}
 				/>
-
 				<AddIncidentModal
 					open={incidentModalOpen}
 					onClose={() => setIncidentModalOpen(false)}
