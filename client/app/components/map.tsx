@@ -78,7 +78,7 @@ function stationMarkerConfig(type: "ambulance" | "fire" | "police") {
 	if (type === "ambulance") {
 		return {
 			icon: "🏥",
-			bg: "bg-blue-500 text-white",
+			bg: "bg-blue-500/30 text-white",
 			ping: "bg-blue-500/30",
 		};
 	}
@@ -86,14 +86,14 @@ function stationMarkerConfig(type: "ambulance" | "fire" | "police") {
 	if (type === "fire") {
 		return {
 			icon: "👨🏾‍🚒",
-			bg: "bg-orange-500 text-white",
+			bg: "bg-orange-500/30 text-white",
 			ping: "bg-orange-500/30",
 		};
 	}
 
 	return {
 		icon: "👮🏽",
-		bg: "bg-indigo-600 text-white",
+		bg: "bg-indigo-600/30 text-white",
 		ping: "bg-indigo-500/30",
 	};
 }
@@ -566,7 +566,9 @@ function MapContent({
 								<span
 									className={`relative flex size-10 items-center justify-center rounded-full shadow ${config.bg}`}
 								>
-									<span className={`${config.icon} size-6`} />
+									<span className="text-xl leading-none" aria-hidden="true">
+										{config.icon}
+									</span>
 								</span>
 							</button>
 						</Marker>
