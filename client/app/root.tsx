@@ -18,6 +18,12 @@ import { useColorScheme } from "./lib/use-color-scheme";
 import { useDispatchLiveSync } from "./lib/use-dispatch";
 import { getUserProfile } from "./lib/user";
 
+declare global {
+	interface BigInt {
+		toJSON(): number;
+	}
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	const [, user] = await tryit(getUserProfile)(request);
 
