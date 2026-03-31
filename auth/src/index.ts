@@ -9,6 +9,7 @@ import { logger } from "hono/logger";
 import { authenticate } from "./lib/authenticate";
 import { login } from "./lib/login";
 import { getProfile, updateProfile } from "./lib/profile";
+import { refresh } from "./lib/refresh";
 import { register } from "./lib/register";
 import { openApiDoc } from "./lib/swagger";
 
@@ -27,6 +28,8 @@ auth.post("/register", register);
 
 auth.post("/login", login);
 
+auth.post("/refresh", refresh);
+
 auth.get("/doc", (c) => c.json(openApiDoc));
 
 auth.get("/ui", swaggerUI({ url: "/api/auth/doc" }));
@@ -36,8 +39,6 @@ auth.use("*", authenticate);
 auth.get("/profile", getProfile);
 
 auth.put("/profile", updateProfile);
-
-// []: TODO: add refresh token
 
 serve(
 	{

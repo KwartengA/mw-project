@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import type { Context } from "hono";
 import { sign } from "hono/jwt";
 import { treeifyError } from "zod";
@@ -34,9 +35,6 @@ export async function login(c: Context) {
 		data: { lastLogin: new Date() },
 	});
 
-	// strip credentials from response
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
 	const now = Math.floor(Date.now() / 1000);
 
 	const token = await sign(
@@ -45,11 +43,22 @@ export async function login(c: Context) {
 			role: user.role,
 			name: user.name,
 			iat: now,
-			exp: now + 14 * 24 * 60 * 60, // 14 days
+			exp: now + 15 * 60, // 15 minutes
 		},
 		process.env.JWT_PRIVATE_KEY!,
 		"RS256",
 	);
 
-	return c.json({ token }, 200);
+	const refreshToken = randomBytes(40).toString("hex");
+	const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+	await prisma.refreshToken.create({
+		data: {
+			token: refreshToken,
+			userId: user.id,
+			expiresAt: refreshExpiresAt,
+		},
+	});
+
+	return c.json({ token, refreshToken }, 200);
 }

@@ -18,6 +18,7 @@ model User {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   authCredential AuthCredential?
+  refreshTokens  RefreshToken[]
 }
 
 model AuthCredential {
@@ -25,6 +26,15 @@ model AuthCredential {
   userId   Int    @unique
   password String
   user     User   @relation(fields: [userId], references: [id])
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum Role {

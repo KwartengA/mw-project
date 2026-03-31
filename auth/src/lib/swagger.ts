@@ -92,8 +92,16 @@ const openApiDoc = {
 				type: "object",
 				properties: {
 					token: { type: "string" },
+					refreshToken: { type: "string" },
 				},
-				required: ["token"],
+				required: ["token", "refreshToken"],
+			},
+			RefreshRequest: {
+				type: "object",
+				properties: {
+					refreshToken: { type: "string" },
+				},
+				required: ["refreshToken"],
 			},
 			UserResponse: {
 				type: "object",
@@ -176,6 +184,46 @@ const openApiDoc = {
 					},
 					"401": {
 						description: "Invalid credentials",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/DetailError" },
+							},
+						},
+					},
+				},
+			},
+		},
+		"/refresh": {
+			post: {
+				tags: ["Auth"],
+				summary: "Refresh access token",
+				requestBody: {
+					required: true,
+					content: {
+						"application/json": {
+							schema: { $ref: "#/components/schemas/RefreshRequest" },
+						},
+					},
+				},
+				responses: {
+					"200": {
+						description: "New access and refresh tokens",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/TokenResponse" },
+							},
+						},
+					},
+					"400": {
+						description: "Missing refresh token",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/DetailError" },
+							},
+						},
+					},
+					"401": {
+						description: "Invalid or expired refresh token",
 						content: {
 							"application/json": {
 								schema: { $ref: "#/components/schemas/DetailError" },
